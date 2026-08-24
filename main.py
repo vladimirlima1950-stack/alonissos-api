@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
-import duckdb
+#import duckdb
 import pandas as pd
 
 app = FastAPI()
@@ -12,5 +12,6 @@ def root():
 async def processar_arquivo(arquivo: UploadFile = File(...)):
     df = pd.read_csv(arquivo.file)
     con = duckdb.connect()
-    resultado = con.execute("SELECT COUNT(*) AS linhas FROM df").fetchdf()
+    linhas = len(df)
+    return {"linhas": linhas}
     return {"linhas": int(resultado.loc[0, "linhas"])}
