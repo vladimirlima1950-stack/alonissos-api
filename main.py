@@ -1,17 +1,24 @@
 from fastapi import FastAPI, UploadFile, File
-#import duckdb
-import pandas as pd
+import os
 
 app = FastAPI()
+
+BASE_CLIENTES = "/app/clientes"
 
 @app.get("/")
 def root():
     return {"status": "online", "message": "API FastAPI funcionando no Railway!"}
 
-@app.post("/processar")
-async def processar_arquivo(arquivo: UploadFile = File(...)):
-    df = pd.read_csv(arquivo.file)
-    con = duckdb.connect()
-    linhas = len(df)
-    return {"linhas": linhas}
-    return {"linhas": int(resultado.loc[0, "linhas"])}
+@app.post("/upload/{cliente}/{campo}")
+async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(...)):
+    pasta_cliente = os.path.join(BASE_CLIENTES, cliente)
+    pasta_entrada = os.path.join(pasta_cliente, "entrada")
+
+    os.makedirs(pasta_entrada, exist_ok=True)
+
+    caminho_arquivo = os.path.join(pasta_entrada, f"{campo}.csv")
+
+    with open(caminho_arquivo, "wb") as f:
+        f.write(await arquivo.read())
+
+    return {"status": "OK", "mensagem": f"Arquivo {campo} recebido para o cliente {cliente}"}
