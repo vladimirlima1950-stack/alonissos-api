@@ -1,18 +1,8 @@
-# apato_0891_nonsazon2_CC.py
-# Equivalente 100% ao MySQL sp8_A_nonsazon2_CC
-
-
-
-
-# apato_0891_nonsazon2_CC - versão multi-cliente
-# Equivalente 100% ao MySQL sp8_A_nonsazon2_CC
-
-import sys
 import os
 import duckdb
 import pandas as pd
 
-def apato_0891_nonsazon2_CC(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -65,12 +55,3 @@ def apato_0891_nonsazon2_CC(pasta_cliente):
 
     finally:
         con.close()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_0891_nonsazon2_CC(pasta_cliente)

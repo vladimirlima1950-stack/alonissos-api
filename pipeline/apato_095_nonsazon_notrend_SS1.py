@@ -1,25 +1,18 @@
-# apato_095_nonsazon_notrend_SS1
-# Compatível 100% com o MySQL sp9_nonsazon_notrend_SS0
-
-
-# apato_095_nonsazon_notrend_SS1 - versão multi-cliente
-# Compatível 100% com o MySQL sp9_nonsazon_notrend_SS0
-
-import sys
 import os
 import duckdb
 
-def apato_095_nonsazon_notrend_SS1(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
 
-    print("1. Conectando ao DuckDB...")
+    print("Iniciando apato_095_nonsazon_notrend_SS1...")
     con = duckdb.connect(caminho_banco, read_only=False)
 
     try:
-        print("2. Criando tabela tb_nonsazon13_notrend_SS0 (estatísticas por SKU)...")
-
+        # ============================================================
+        # 2) Estatísticas por SKU — SS0
+        # ============================================================
         con.execute("""
             DROP TABLE IF EXISTS tb_nonsazon13_notrend_SS0;
 
@@ -32,8 +25,9 @@ def apato_095_nonsazon_notrend_SS1(pasta_cliente):
             GROUP BY sku;
         """)
 
-        print("3. Criando tabela tb_nonsazon13_notrend_SS1 (consolidada)...")
-
+        # ============================================================
+        # 3) Tabela consolidada SS1
+        # ============================================================
         con.execute("""
             DROP TABLE IF EXISTS tb_nonsazon13_notrend_SS1;
 
@@ -61,15 +55,17 @@ def apato_095_nonsazon_notrend_SS1(pasta_cliente):
             ORDER BY f.sku, f.ordem;
         """)
 
-        print("4. Calculando desvio padrão corrigido...")
-
+        # ============================================================
+        # 4) Desvio padrão corrigido
+        # ============================================================
         con.execute("""
             UPDATE tb_nonsazon13_notrend_SS1
             SET desv_pad_corr = desvpad_demanda * POW(lead_time_dias / 30.0, 0.5);
         """)
 
-        print("5. Calculando invnorm (regra CASE)...")
-
+        # ============================================================
+        # 5) invnorm (regra CASE)
+        # ============================================================
         con.execute("""
             UPDATE tb_nonsazon13_notrend_SS1
             SET invnorm = CASE
@@ -101,8 +97,9 @@ def apato_095_nonsazon_notrend_SS1(pasta_cliente):
             END;
         """)
 
-        print("6. Calculando estoque de segurança...")
-
+        # ============================================================
+        # 6) Estoque de segurança
+        # ============================================================
         con.execute("""
             UPDATE tb_nonsazon13_notrend_SS1
             SET estoq_segur = CASE
@@ -111,16 +108,7 @@ def apato_095_nonsazon_notrend_SS1(pasta_cliente):
             END;
         """)
 
-        print("7. Programa concluído com sucesso.")
+        print("apato_095_nonsazon_notrend_SS1 executado com sucesso.")
 
     finally:
         con.close()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_095_nonsazon_notrend_SS1(pasta_cliente)

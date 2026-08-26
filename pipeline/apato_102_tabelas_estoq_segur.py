@@ -1,14 +1,7 @@
-# apato_102_tabelas_estoq_segur — equivalente ao sp12_tabelas_estoq_segur (MySQL)
-
-
-# apato_102_tabelas_estoq_segur - versão multi-cliente
-# Equivalente ao MySQL sp12_tabelas_estoq_segur
-
-import sys
 import os
 import duckdb
 
-def apato_102_tabelas_estoq_segur(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -59,15 +52,5 @@ def apato_102_tabelas_estoq_segur(pasta_cliente):
             ORDER BY sku;
         """)
 
-    print("Procedimento apato_102_tabelas_estoq_segur executado com sucesso.")
-
+    print("apato_102_tabelas_estoq_segur executado com sucesso.")
     con.close()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_102_tabelas_estoq_segur(pasta_cliente)

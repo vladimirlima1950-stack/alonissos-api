@@ -1,16 +1,8 @@
-# apato_096_nonsazon_trend_SS1
-# Compatível 100% com o MySQL sp9X_nonsazon_trend_SS0
-
-
-# apato_096_nonsazon_trend_SS1 - versão multi-cliente
-# Compatível 100% com o MySQL sp9X_nonsazon_trend_SS0
-
-import sys
 import os
 import duckdb
 from datetime import datetime
 
-def apato_096_nonsazon_trend_SS1(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -228,13 +220,3 @@ def apato_096_nonsazon_trend_SS1(pasta_cliente):
         "status": "OK",
         "mensagem": "Programa executado com sucesso."
     }
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    resultado = apato_096_nonsazon_trend_SS1(pasta_cliente)
-    print(resultado)

@@ -1,10 +1,3 @@
-# apato_106_apresenta1
-
-
-# apato_106_apresenta1 - versão multi-cliente
-# Equivalente ao MySQL sp_apresenta1
-
-import sys
 import os
 import duckdb
 import pandas as pd
@@ -12,7 +5,7 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 
-def apato_106_apresenta1(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -189,12 +182,3 @@ def apato_106_apresenta1(pasta_cliente):
 
     print("apato_106_apresenta1 executado com sucesso.")
     return con
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_106_apresenta1(pasta_cliente)

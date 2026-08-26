@@ -1,17 +1,11 @@
 # apato_000_master_pipeline.py
-# Script mestre oficial do sistema multi‑cliente
-# Pipeline mestre automático — processa todos os clientes, um por vez
-
-# apato_000_master_pipeline.py
 # Pipeline mestre automático — processa todos os clientes, um por vez
 
 import os
 import sys
-import subprocess
+import importlib
 from datetime import datetime
 import duckdb
-
-
 
 
 # ============================================================
@@ -48,20 +42,6 @@ def processar_cliente(pasta_cliente):
         log("Nenhum arquivo de entrada encontrado. Cliente será ignorado.")
         log(f"FINALIZADO (SEM PROCESSAMENTO) PARA O CLIENTE: {pasta_cliente}")
         return
-
-    pasta_processamento = os.path.join(pasta_cliente, "processamento")
-    pasta_logs = os.path.join(pasta_cliente, "logs")
-    caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
-
-    os.makedirs(pasta_processamento, exist_ok=True)
-    os.makedirs(pasta_logs, exist_ok=True)
-
-    log_file = os.path.join(pasta_logs, "pipeline_log.txt")
-
-    def log(msg):
-        with open(log_file, "a", encoding="utf-8") as f:
-            f.write(f"{datetime.now()} - {msg}\n")
-        print(msg)
 
     log("==============================================")
     log(f"INÍCIO DO PROCESSAMENTO DO CLIENTE: {pasta_cliente}")
@@ -147,99 +127,60 @@ def processar_cliente(pasta_cliente):
         "apato_097_CDEF_complementar",
         "apato_100_resumo1",
         "apato_102_tabelas_estoq_segur",
-        "apato_103_104_otimizado",
+        "apato_103_104_unificado_otimizado",
         "apato_105_junta_tabelas_estoq_segur1",
-        "apato_106_apresenta1"
+        "apato_106_apresenta1",
+
+        # NOVOS PROGRAMAS (substituem os PHP)
+        "apato_gera_plan_tb_apres1_fim",
+        "apato_gera_plan_tb_apres2_fim",
+        "apato_gera_plan_tb_demandas_previsoes",
+        "apato_gera_plan_tb_estoques_segurança",
+        "apato_gera_plan_tb_estoques_valores_fim",
+        "apato_gera_plan_tb_tempo_programas",
     ]
 
-    # Caminho correto dos scripts Python
-    caminho_scripts_python = r"C:\xampp\htdocs\dashboard\alonissos\AAAAAA_novissimo"
-
-
     # ============================================================
-    # 3) Execução dos scripts Python
+    # 3) Execução dos scripts Python (via import + run)
     # ============================================================
+
+    evento = "OK"
 
     for programa in programas_python:
         inicio = datetime.now()
-        caminho_script = os.path.join(caminho_scripts_python, f"{programa}.py")
-
         log(f"Executando: {programa}")
 
         try:
-            subprocess.run(
-                ["python", caminho_script, pasta_cliente],
-                capture_output=True,
-                text=True,
-                check=True
-            )
+            modulo = importlib.import_module(programa)
+            modulo.run(pasta_cliente)
             evento = "OK"
             log(f"{programa} concluído.")
-        except subprocess.CalledProcessError as e:
-            evento = f"ERRO: {e.stderr}"
+        except Exception as e:
+            evento = f"ERRO: {e}"
             log(f"ERRO ao executar {programa}: {evento}")
             log("Pipeline interrompido para este cliente.")
-            break  # STOP ON ERROR
-
-        fim = datetime.now()
-
-        con = duckdb.connect(caminho_banco, read_only=False)
-        con.execute("""
-            INSERT INTO tb_tempo_programa VALUES (?, ?, ?, ?)
-        """, [programa, inicio, fim, evento])
-        con.close()
-
-    # Se houve erro, não executa PHP
-    if evento != "OK":
-        log("Scripts PHP não serão executados devido a erro anterior.")
-        log(f"FINALIZADO COM ERRO PARA O CLIENTE: {pasta_cliente}")
-        return
-
-    # ============================================================
-    # 4) Execução dos scripts PHP (CORRIGIDO)
-    # ============================================================
-
-    caminho_scripts_php = r"C:\xampp\htdocs\dashboard\alonissos\AAAAAA_novissimo"
-
-    programas_php = [
-        "alon_prev_gera_plan_tb_apres1_fim.php",
-        "alon_prev_gera_plan_tb_apres2_fim.php",
-        "alon_prev_gera_plan_tb_demandas_previsoes.php",
-        "alon_prev_gera_plan_tb_estoques_segurança.php",
-        "alon_prev_gera_plan_tb_estoques_valores_fim.php",
-        "alon_prev_gera_plan_tb_tempo_programas.php"
-    ]
-
-    php_exe = r"C:\xampp\php\php.exe"
-
-    for programa in programas_php:
-        inicio = datetime.now()
-        caminho_script = os.path.join(caminho_scripts_php, programa)
-
-        log(f"Executando PHP: {programa}")
-
-        try:
-            subprocess.run(
-                [php_exe, caminho_script, pasta_cliente],
-                stdout=open(os.path.join(pasta_logs, "php_log.txt"), "a", encoding="utf-8"),
-                stderr=open(os.path.join(pasta_logs, "php_log.txt"), "a", encoding="utf-8"),
-                check=True
+            fim = datetime.now()
+            con = duckdb.connect(caminho_banco, read_only=False)
+            con.execute(
+                "INSERT INTO tb_tempo_programa VALUES (?, ?, ?, ?)",
+                [programa, inicio, fim, evento],
             )
-            evento = "OK"
-            log(f"{programa} concluído.")
-        except subprocess.CalledProcessError as e:
-            evento = f"ERRO: {e.stderr}"
-            log(f"ERRO ao executar {programa}: {evento}")
-            log("Pipeline interrompido para este cliente.")
+            con.close()
             break
 
         fim = datetime.now()
 
         con = duckdb.connect(caminho_banco, read_only=False)
-        con.execute("""
-            INSERT INTO tb_tempo_programa VALUES (?, ?, ?, ?)
-        """, [programa, inicio, fim, evento])
+        con.execute(
+            "INSERT INTO tb_tempo_programa VALUES (?, ?, ?, ?)",
+            [programa, inicio, fim, evento],
+        )
         con.close()
+
+    if evento != "OK":
+        log(f"FINALIZADO COM ERRO PARA O CLIENTE: {pasta_cliente}")
+        log("==============================================\n")
+        return
 
     log(f"FINALIZADO COM SUCESSO PARA O CLIENTE: {pasta_cliente}")
     log("==============================================\n")

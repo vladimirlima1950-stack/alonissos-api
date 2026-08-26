@@ -1,16 +1,7 @@
-# apato_093_sazon_notrend_SS1.py
-# Equivalente 100% ao MySQL sp9_sazon_notrend_SS1
-
-# Equivalente 100% ao MySQL sp9_sazon_notrend_SS1
-
-
-
-
-import sys
 import os
 import duckdb
 
-def apato_093_sazon_notrend_SS1(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -278,18 +269,9 @@ def apato_093_sazon_notrend_SS1(pasta_cliente):
         SET qtde_pedida = f.qtde_pedida
         FROM tb_sazon11_notrend_fase1 AS f
         WHERE tb_sazon11_notrend_SS1.sku = f.sku
-        AND tb_sazon11_notrend_SS1.ordem = f.ordem
+          AND tb_sazon11_notrend_SS1.ordem = f.ordem
     """)
 
     print("apato_093_sazon_notrend_SS1 executado com sucesso — equivalente ao MySQL sp9_sazon_notrend_SS1.")
 
     con.close()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_093_sazon_notrend_SS1(pasta_cliente)

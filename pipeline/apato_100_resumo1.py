@@ -1,18 +1,8 @@
-# apato_100_resumo1.py
-# Compatível 100% com o MySQL sp10_resumo1
-
-
-# Baseado no programa inglês aduck_100_resumo1.py
-
-# apato_100_resumo1 - versão multi-cliente
-# Compatível 100% com o MySQL sp10_resumo1
-
-import sys
 import os
 import duckdb
 from datetime import datetime
 
-def apato_100_resumo1(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -82,13 +72,3 @@ def apato_100_resumo1(pasta_cliente):
         "status": "OK",
         "mensagem": "Programa executado com sucesso."
     }
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    resultado = apato_100_resumo1(pasta_cliente)
-    print(resultado)

@@ -1,16 +1,7 @@
-# apato_103_104_unificado_otimizado.py
-
-
-
-
-# apato_103_104_unificado_otimizado - versão multi-cliente
-# Equivalente ao MySQL sp103 + sp104 unificados
-
-import sys
 import os
 import duckdb
 
-def apato_103_104_unificado(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -28,6 +19,7 @@ def apato_103_104_unificado(pasta_cliente):
         if mes_row is None or mes_row[0] is None:
             print("Nenhum registro em tb_resumo1 para calcular 'mes'.")
             return
+
         mes = int(mes_row[0])
 
         # 24 tabelas corr_menosXX
@@ -35,6 +27,7 @@ def apato_103_104_unificado(pasta_cliente):
             nome_tabela = f"tb_corr_menos{i}"
             nome_coluna = f"corr_menos{i}"
             ordem_alvo = mes + (24 - i)
+
             con.execute(f"DROP TABLE IF EXISTS {nome_tabela};")
             con.execute(f"""
                 CREATE TABLE {nome_tabela} AS
@@ -63,6 +56,7 @@ def apato_103_104_unificado(pasta_cliente):
             nome_tabela = f"tb_corr_mais{i}"
             nome_coluna = f"corr_mais{i}"
             ordem_alvo = mes + i
+
             con.execute(f"DROP TABLE IF EXISTS {nome_tabela};")
             con.execute(f"""
                 CREATE TABLE {nome_tabela} AS
@@ -269,12 +263,3 @@ def apato_103_104_unificado(pasta_cliente):
 
     finally:
         con.close()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_103_104_unificado(pasta_cliente)

@@ -1,15 +1,7 @@
-# apato_105_junta_tabelas_estoque_segur1
-# import mysql.connector
-
-
-# apato_105_junta_tabelas_estoq_segur1 - versão multi-cliente
-# Equivalente ao MySQL sp14
-
-import sys
 import os
 import duckdb
 
-def apato_105_junta_tabelas_estoq_segur1(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -151,12 +143,3 @@ def apato_105_junta_tabelas_estoq_segur1(pasta_cliente):
 
     finally:
         con.close()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    apato_105_junta_tabelas_estoq_segur1(pasta_cliente)

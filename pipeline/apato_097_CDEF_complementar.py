@@ -1,17 +1,8 @@
-# apato_097_CDEF_complementar
-# Compatível 100% com o MySQL sp9CDEF_complementar
-
-
-
-# apato_097_CDEF_complementar - versão multi-cliente
-# Compatível 100% com o MySQL sp9CDEF_complementar
-
-import sys
 import os
 import duckdb
 from datetime import datetime
 
-def apato_095_CDEF_complementar(pasta_cliente):
+def run(pasta_cliente):
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
@@ -47,7 +38,7 @@ def apato_095_CDEF_complementar(pasta_cliente):
     """)
 
     # ============================================================
-    # 3) Processamento em blocos (equivalente ao WHILE do MySQL)
+    # 3) Processamento em blocos
     # ============================================================
     while True:
 
@@ -143,19 +134,9 @@ def apato_095_CDEF_complementar(pasta_cliente):
     fim = datetime.now()
 
     return {
-        "nome_programa": "apato_095_CDEF_complementar",
+        "nome_programa": "apato_097_CDEF_complementar",
         "inicio": str(inicio),
         "fim": str(fim),
         "status": "OK",
         "mensagem": "Programa executado com sucesso."
     }
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Erro: informe o caminho do cliente.")
-        sys.exit(1)
-
-    pasta_cliente = sys.argv[1]
-    resultado = apato_095_CDEF_complementar(pasta_cliente)
-    print(resultado)

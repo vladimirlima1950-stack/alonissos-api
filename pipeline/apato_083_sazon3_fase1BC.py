@@ -1,101 +1,89 @@
-# apato_083_sazon3_fase1BC.py
-
-
-# apato_083_sazon3_fase1BC - versão multi-cliente
-
-import sys
 import os
 import duckdb
 import pandas as pd
 
-# ============================================================
-# 1. RECEBE O CAMINHO DO CLIENTE
-# ============================================================
+def run(pasta_cliente):
 
-if len(sys.argv) < 2:
-    print("Erro: o programa deve receber o caminho do cliente como parâmetro.")
-    sys.exit(1)
+    # Pasta de processamento do cliente
+    pasta_processamento = os.path.join(pasta_cliente, "processamento")
 
-pasta_cliente = sys.argv[1]
-pasta_processamento = os.path.join(pasta_cliente, "processamento")
+    # Banco DuckDB do cliente
+    caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
+    conn = duckdb.connect(database=caminho_banco, read_only=False)
 
-# Banco DuckDB do cliente
-caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
-conn = duckdb.connect(database=caminho_banco, read_only=False)
+    # ============================================================
+    # 1) Carregar tb_sazon3BC e tb_sazon1BBC
+    # ============================================================
 
-# ============================================================
-# 1) Carregar tb_sazon3BC e tb_sazon1BBC
-# ============================================================
+    df_sazon3BC = conn.execute("""
+        SELECT * FROM tb_sazon3BC ORDER BY sku, ordem
+    """).fetchdf()
 
-df_sazon3BC = conn.execute("""
-    SELECT * FROM tb_sazon3BC ORDER BY sku, ordem
-""").fetchdf()
+    df_sazon1BBC = conn.execute("""
+        SELECT sku FROM tb_sazon1BBC ORDER BY id_reg
+    """).fetchdf()
 
-df_sazon1BBC = conn.execute("""
-    SELECT sku FROM tb_sazon1BBC ORDER BY id_reg
-""").fetchdf()
+    # ============================================================
+    # 2) Calcular média de 2 meses (ordem atual + ordem+12)
+    # ============================================================
 
-# ============================================================
-# 2) Calcular média de 2 meses (ordem atual + ordem+12)
-# ============================================================
+    media_updates = []
 
-media_updates = []
+    for sku in df_sazon1BBC['sku']:
+        df_sku = df_sazon3BC[df_sazon3BC['sku'] == sku].sort_values('ordem')
 
-for sku in df_sazon1BBC['sku']:
-    df_sku = df_sazon3BC[df_sazon3BC['sku'] == sku].sort_values('ordem')
+        ordens = df_sku['ordem'].tolist()
 
-    ordens = df_sku['ordem'].tolist()
+        for ordem in ordens:
+            ordem_mais12 = ordem + 12
 
-    for ordem in ordens:
-        ordem_mais12 = ordem + 12
+            if ordem_mais12 not in ordens:
+                continue
 
-        if ordem_mais12 not in ordens:
-            continue
+            q1 = float(df_sku[df_sku['ordem'] == ordem]['qtde_pedida'].iloc[0])
+            q2 = float(df_sku[df_sku['ordem'] == ordem_mais12]['qtde_pedida'].iloc[0])
 
-        q1 = float(df_sku[df_sku['ordem'] == ordem]['qtde_pedida'].iloc[0])
-        q2 = float(df_sku[df_sku['ordem'] == ordem_mais12]['qtde_pedida'].iloc[0])
+            media = (q1 + q2) / 2
 
-        media = (q1 + q2) / 2
+            media_updates.append((media, sku, ordem))
+            media_updates.append((media, sku, ordem_mais12))
 
-        media_updates.append((media, sku, ordem))
-        media_updates.append((media, sku, ordem_mais12))
+    # ============================================================
+    # 3) Aplicar atualizações de media_2meses
+    # ============================================================
 
-# ============================================================
-# 3) Aplicar atualizações de media_2meses
-# ============================================================
+    for media, sku, ordem in media_updates:
+        conn.execute("""
+            UPDATE tb_sazon3BC
+            SET media_2meses = ?
+            WHERE sku = ? AND ordem = ?
+        """, [media, sku, ordem])
 
-for media, sku, ordem in media_updates:
+    # ============================================================
+    # 4) Correções mínimas
+    # ============================================================
+
     conn.execute("""
         UPDATE tb_sazon3BC
-        SET media_2meses = ?
-        WHERE sku = ? AND ordem = ?
-    """, [media, sku, ordem])
+        SET media_2meses = 0.1
+        WHERE media_2meses IS NULL OR media_2meses < 0.1
+    """)
 
-# ============================================================
-# 4) Correções mínimas
-# ============================================================
+    # ============================================================
+    # 5) Calcular índice de sazonalidade
+    # ============================================================
 
-conn.execute("""
-    UPDATE tb_sazon3BC
-    SET media_2meses = 0.1
-    WHERE media_2meses IS NULL OR media_2meses < 0.1
-""")
+    conn.execute("""
+        UPDATE tb_sazon3BC
+        SET indice_sazon = media_2meses / NULLIF(media_24meses, 0)
+    """)
 
-# ============================================================
-# 5) Calcular índice de sazonalidade
-# ============================================================
+    conn.execute("""
+        UPDATE tb_sazon3BC
+        SET indice_sazon = 0.1
+        WHERE indice_sazon IS NULL OR indice_sazon < 0.1
+    """)
 
-conn.execute("""
-    UPDATE tb_sazon3BC
-    SET indice_sazon = media_2meses / NULLIF(media_24meses, 0)
-""")
+    print("tb_sazon3BC atualizada com sucesso (equivalente ao sp8_sazon3_fase1BC).")
 
-conn.execute("""
-    UPDATE tb_sazon3BC
-    SET indice_sazon = 0.1
-    WHERE indice_sazon IS NULL OR indice_sazon < 0.1
-""")
-
-print("tb_sazon3BC atualizada com sucesso (equivalente ao sp8_sazon3_fase1BC).")
-
-conn.close()
+    conn.close()
