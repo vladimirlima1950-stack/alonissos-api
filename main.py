@@ -1,6 +1,7 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 import os
-import shutil
+import requests
+import json
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -9,13 +10,17 @@ app = FastAPI()
 
 BASE_CLIENTES = "/app/clientes"
 
+# ============================================================
+# STATUS DA API
+# ============================================================
+
 @app.get("/")
 def root():
     return {
         "status": "online",
         "message": "API FastAPI funcionando no Railway!",
         "upload": "/upload/{cliente}/{campo}",
-        "processar": "/processar/{cliente}"
+        "processar": "/processar/{cliente}?email=EMAIL_DO_CLIENTE"
     }
 
 # ============================================================
@@ -40,11 +45,20 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
     }
 
 # ============================================================
-# PROCESSAMENTO COMPLETO DO CLIENTE
+# PROCESSAMENTO COMPLETO + ENVIO DE E‑MAIL (OPÇÃO A)
 # ============================================================
 
 @app.post("/processar/{cliente}")
-def processar(cliente: str):
+def processar(request: Request, cliente: str):
+
+    # Captura o e‑mail enviado pelo HostGator
+    email_cliente = request.query_params.get("email")
+
+    if not email_cliente:
+        return {
+            "status": "ERRO",
+            "mensagem": "E-mail do cliente não foi enviado pelo HostGator."
+        }
 
     pasta_cliente = os.path.join(BASE_CLIENTES, cliente)
 
@@ -59,13 +73,34 @@ def processar(cliente: str):
     os.makedirs(pasta_saida, exist_ok=True)
     os.makedirs(pasta_logs, exist_ok=True)
 
-    # Chama o pipeline mestre
+    # Executa o pipeline
     try:
         processar_cliente(pasta_cliente)
+
+        # Caminhos dos anexos gerados pelo pipeline
+        anexos = [
+            f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_estoques_seguranca.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
+        ]
+
+        # Chama o mailer no HostGator
+        requests.post(
+            "https://mupeconsult.com/sistema/email.php",
+            data={
+                "cliente": cliente,
+                "email": email_cliente,
+                "anexos": json.dumps(anexos)
+            }
+        )
+
         return {
             "status": "OK",
-            "mensagem": f"Processamento concluído para o cliente {cliente}"
+            "mensagem": f"Processamento concluído e e‑mail enviado para {email_cliente}"
         }
+
     except Exception as e:
         return {
             "status": "ERRO",
