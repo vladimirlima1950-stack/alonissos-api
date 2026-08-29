@@ -127,7 +127,7 @@ def processar(request: Request, cliente: str):
             f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
             f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
             f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_estoques_valores_fim.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
             f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
         ]
 
