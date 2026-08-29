@@ -1,7 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, Request
 import os
-import requests
 import json
+import smtplib
+import ssl
+from email.message import EmailMessage
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -45,7 +47,50 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
     }
 
 # ============================================================
-# PROCESSAMENTO COMPLETO + ENVIO DE E‑MAIL (OPÇÃO A)
+# FUNÇÃO DE ENVIO DE E‑MAIL DIRETO PELO RAILWAY
+# ============================================================
+
+def enviar_email_python(cliente, email_destino, anexos):
+    msg = EmailMessage()
+    msg["Subject"] = f"Relatórios gerados para o cliente {cliente}"
+    msg["From"] = "vladimir.lima@mupeconsult.com"
+    msg["To"] = email_destino
+
+    msg.set_content("Relatórios anexados.")
+    msg.add_alternative(f"""
+        <h2>Relatórios Gerados com Sucesso</h2>
+        <p>Olá,</p>
+        <p>Os relatórios do cliente <strong>{cliente}</strong> foram processados com sucesso.</p>
+        <p>As planilhas estão anexadas a este e‑mail.</p>
+        <p>Atenciosamente,<br>MUPE Consultoria</p>
+    """, subtype="html")
+
+    # Anexos
+    for arquivo in anexos:
+        try:
+            with open(arquivo, "rb") as f:
+                msg.add_attachment(
+                    f.read(),
+                    maintype="application",
+                    subtype="octet-stream",
+                    filename=os.path.basename(arquivo)
+                )
+        except Exception as e:
+            print(f"ERRO ao anexar {arquivo}: {e}")
+
+    contexto = ssl.create_default_context()
+
+    try:
+        with smtplib.SMTP("smtp.titan.email", 587) as smtp:
+            smtp.starttls(context=contexto)
+            smtp.login("vladimir.lima@mupeconsult.com", "Vlagoshost1950#")
+            smtp.send_message(msg)
+            print(f"E‑mail enviado para {email_destino}")
+    except Exception as e:
+        print(f"ERRO ao enviar e‑mail: {e}")
+
+# ============================================================
+# PROCESSAMENTO COMPLETO + ENVIO DE E‑MAIL DIRETO
 # ============================================================
 
 @app.post("/processar/{cliente}")
@@ -81,20 +126,13 @@ def processar(request: Request, cliente: str):
         anexos = [
             f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
             f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_estoques_seguranca.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
+            f"/app/clientes/{cliente}/saida/tabela_estoques_valores_fim.xlsx",
             f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
         ]
 
-        # Chama o mailer no HostGator
-        requests.post(
-            "https://mupeconsult.com/sistema/email.php",
-            data={
-                "cliente": cliente,
-                "email": email_cliente,
-                "anexos": json.dumps(anexos)
-            }
-        )
+        # Envio direto pelo Railway
+        enviar_email_python(cliente, email_cliente, anexos)
 
         return {
             "status": "OK",
