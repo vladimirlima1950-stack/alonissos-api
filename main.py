@@ -84,8 +84,13 @@ def enviar_email_python(cliente, email_destino, anexos):
         with smtplib.SMTP("smtp.titan.email", 587) as smtp:
             smtp.starttls(context=contexto)
             smtp.login("vladimir.lima@mupeconsult.com", "Vlagoshost1950#")
-            smtp.send_message(msg)
-            print(f"E‑mail enviado para {email_destino}")
+
+            try:
+                smtp.send_message(msg)
+                print("EMAIL OK — mensagem enviada com sucesso")
+            except Exception as e:
+                print("EMAIL ERRO:", e)
+
     except Exception as e:
         print(f"ERRO ao enviar e‑mail: {e}")
 
