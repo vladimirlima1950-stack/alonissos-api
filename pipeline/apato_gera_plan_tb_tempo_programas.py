@@ -50,10 +50,13 @@ def run(pasta_cliente):
 
     totalLinhas = len(df) + 1
 
-    # Formatação de datas (igual ao PHP)
+    # ============================================================
+    # FORMATAÇÃO DE DATAS (CORREÇÃO DO ERRO)
+    # ============================================================
     if totalLinhas > 1:
-        ws[f"B2:B{totalLinhas}"].number_format = numbers.FORMAT_DATE_DATETIME
-        ws[f"C2:C{totalLinhas}"].number_format = numbers.FORMAT_DATE_DATETIME
+        for linha in range(2, totalLinhas + 1):
+            ws[f"B{linha}"].number_format = numbers.FORMAT_DATE_DATETIME
+            ws[f"C{linha}"].number_format = numbers.FORMAT_DATE_DATETIME
 
     # ============================================================
     # SALVA ARQUIVO
