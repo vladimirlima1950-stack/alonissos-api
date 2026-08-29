@@ -4,3 +4,4 @@ pandas
 duckdb
 python-multipart
 openpyxl>=3.1.0
+requests
