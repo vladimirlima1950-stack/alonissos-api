@@ -3,6 +3,7 @@ import os
 import json
 import smtplib
 import ssl
+import threading
 from email.message import EmailMessage
 
 # Importa o pipeline mestre
@@ -95,13 +96,12 @@ def enviar_email_python(cliente, email_destino, anexos):
         print(f"ERRO ao enviar e‑mail: {e}")
 
 # ============================================================
-# PROCESSAMENTO COMPLETO + ENVIO DE E‑MAIL DIRETO
+# PROCESSAMENTO COMPLETO EM BACKGROUND (SEM TIMEOUT)
 # ============================================================
 
 @app.post("/processar/{cliente}")
 def processar(request: Request, cliente: str):
 
-    # Captura o e‑mail enviado pelo HostGator
     email_cliente = request.query_params.get("email")
 
     if not email_cliente:
@@ -123,29 +123,33 @@ def processar(request: Request, cliente: str):
     os.makedirs(pasta_saida, exist_ok=True)
     os.makedirs(pasta_logs, exist_ok=True)
 
-    # Executa o pipeline
-    try:
-        processar_cliente(pasta_cliente)
+    # Função que roda em background
+    def tarefa_background():
+        try:
+            print("PROCESSAMENTO EM BACKGROUND INICIADO")
 
-        # Caminhos dos anexos gerados pelo pipeline
-        anexos = [
-            f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
-            f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
-        ]
+            processar_cliente(pasta_cliente)
 
-        # Envio direto pelo Railway
-        enviar_email_python(cliente, email_cliente, anexos)
+            anexos = [
+                f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
+                f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
+                f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
+                f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
+                f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
+            ]
 
-        return {
-            "status": "OK",
-            "mensagem": f"Processamento concluído e e‑mail enviado para {email_cliente}"
-        }
+            enviar_email_python(cliente, email_cliente, anexos)
 
-    except Exception as e:
-        return {
-            "status": "ERRO",
-            "mensagem": f"Falha ao processar cliente {cliente}: {str(e)}"
-        }
+            print("PROCESSAMENTO + EMAIL FINALIZADOS")
+
+        except Exception as e:
+            print("ERRO NO PROCESSAMENTO EM BACKGROUND:", e)
+
+    # Dispara a thread
+    threading.Thread(target=tarefa_background).start()
+
+    # Resposta imediata para evitar timeout
+    return {
+        "status": "OK",
+        "mensagem": "Processamento iniciado. O e-mail será enviado automaticamente ao final."
+    }
