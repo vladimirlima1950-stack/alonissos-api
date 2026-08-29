@@ -7,6 +7,12 @@ import importlib
 from datetime import datetime
 import duckdb
 
+# ============================================================
+# Ajuste CRÍTICO: adiciona a pasta "pipeline" ao PYTHONPATH
+# ============================================================
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "pipeline"))
+
 
 # ============================================================
 # Função para processar UM cliente
@@ -151,14 +157,18 @@ def processar_cliente(pasta_cliente):
         log(f"Executando: {programa}")
 
         try:
-            modulo = importlib.import_module(programa)
+            # IMPORT CORRIGIDO
+            modulo = importlib.import_module(f"pipeline.{programa}")
             modulo.run(pasta_cliente)
+
             evento = "OK"
             log(f"{programa} concluído.")
+
         except Exception as e:
             evento = f"ERRO: {e}"
             log(f"ERRO ao executar {programa}: {evento}")
             log("Pipeline interrompido para este cliente.")
+
             fim = datetime.now()
             con = duckdb.connect(caminho_banco, read_only=False)
             con.execute(
@@ -187,7 +197,7 @@ def processar_cliente(pasta_cliente):
 
 
 # ============================================================
-# 5) Pipeline principal — detecta todos os clientes
+# Execução direta (modo desktop)
 # ============================================================
 
 def apato_000_master_pipeline():
@@ -211,10 +221,6 @@ def apato_000_master_pipeline():
 
     print("\n=== PIPELINE COMPLETO ===")
 
-
-# ============================================================
-# Execução
-# ============================================================
 
 if __name__ == "__main__":
     apato_000_master_pipeline()
