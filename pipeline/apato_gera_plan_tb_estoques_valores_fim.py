@@ -1,28 +1,70 @@
 import os
 import duckdb
+import pandas as pd
 from openpyxl import Workbook
-from openpyxl.styles import Alignment, Font, numbers
+from openpyxl.styles import Alignment, Font
 
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', 1000)
+
+# ============================================================
+# Função para localizar colunas ignorando maiúsculas/minúsculas
+# ============================================================
+def encontrar_coluna(con, tabela, palavra):
+    palavra = palavra.lower()
+    cols = con.execute(f"DESCRIBE {tabela}").fetchdf()["column_name"].tolist()
+
+    for c in cols:
+        if palavra in c.lower():
+            return c
+
+    raise Exception(f"Nenhuma coluna contendo '{palavra}' encontrada na tabela {tabela}.")
+
+
+# ============================================================
+# Função principal
+# ============================================================
 def run(pasta_cliente):
 
     pasta_saida = os.path.join(pasta_cliente, "saida")
     os.makedirs(pasta_saida, exist_ok=True)
 
-    caminho_duckdb = os.path.join(pasta_cliente, "processamento", "previsao.duckdb")
+    pasta_processamento = os.path.join(pasta_cliente, "processamento")
+    caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
 
-    con = duckdb.connect(caminho_duckdb, read_only=False)
+    print("Conectando ao DuckDB:", caminho_banco)
+    con = duckdb.connect(caminho_banco, read_only=False)
+
+    tabela = "tb_estoques_valores_fim"
 
     # ============================================================
-    # CONSULTA AO BANCO (ESTOQUES VALORES)
+    # Localiza automaticamente as colunas (case-insensitive)
     # ============================================================
-    df = con.execute("""
-        SELECT class_abc_pedidos, class_abc_valores, sku,
-               qtde, custo_unit, total_valor_sku, porc_valor_estoque
-        FROM tb_estoques_valores_fim
+    col_class_ped = encontrar_coluna(con, tabela, "class_abc_ped")
+    col_class_val = encontrar_coluna(con, tabela, "class_abc_val")
+    col_sku       = encontrar_coluna(con, tabela, "sku")
+    col_qtde      = encontrar_coluna(con, tabela, "qtde")
+    col_custo     = encontrar_coluna(con, tabela, "custo_unit")
+    col_total     = encontrar_coluna(con, tabela, "total_valor_sku")
+    col_porc      = encontrar_coluna(con, tabela, "porc_valor_estoque")
+
+    # ============================================================
+    # Consulta ao banco usando os nomes reais das colunas
+    # ============================================================
+    df = con.execute(f"""
+        SELECT 
+            {col_class_ped},
+            {col_class_val},
+            {col_sku},
+            {col_qtde},
+            {col_custo},
+            {col_total},
+            {col_porc}
+        FROM {tabela}
     """).df()
 
     # ============================================================
-    # TÍTULOS E CAMPOS (mantidos exatamente como no PHP)
+    # Títulos e campos (mantidos como no PHP)
     # ============================================================
     titulos = [
         'frequência de pedidos', 'importância no faturamento', 'sku número',
@@ -31,12 +73,12 @@ def run(pasta_cliente):
     ]
 
     campos = [
-        'class_abc_pedidos', 'class_abc_valores', 'sku',
-        'qtde', 'custo_unit', 'total_valor_sku', 'porc_valor_estoque'
+        col_class_ped, col_class_val, col_sku,
+        col_qtde, col_custo, col_total, col_porc
     ]
 
     # ============================================================
-    # CRIAÇÃO DA PLANILHA
+    # Criação da planilha
     # ============================================================
     wb = Workbook()
     ws = wb.active
@@ -50,45 +92,28 @@ def run(pasta_cliente):
         ws.column_dimensions[cell.column_letter].width = 18
 
     # ============================================================
-    # PREENCHENDO DADOS
+    # Preenchendo dados
     # ============================================================
-    linha = 2
-
-    for _, row in df.iterrows():
+    for row_idx, row in df.iterrows():
+        excel_row = row_idx + 2
         for col_idx, campo in enumerate(campos, start=1):
-
+            cell = ws.cell(row=excel_row, column=col_idx)
             valor = row[campo]
-            cell = ws.cell(row=linha, column=col_idx)
 
-            # Alinhamento igual ao PHP
-            if campo == "sku":
+            # Alinhamento
+            if campo == col_sku:
                 cell.alignment = Alignment(horizontal="left")
             else:
                 cell.alignment = Alignment(horizontal="center")
 
             # Valor
-            if isinstance(valor, (int, float)):
-                cell.value = float(valor)
-            else:
-                cell.value = valor
-
-            # Formatação numérica específica por campo (igual ao PHP)
-            if isinstance(valor, (int, float)):
-                if campo == "qtde":
-                    cell.number_format = numbers.FORMAT_NUMBER
-                elif campo in ("custo_unit", "total_valor_sku"):
-                    cell.number_format = "#,##0.00"
-                elif campo == "porc_valor_estoque":
-                    cell.number_format = "0.00%"
-
-        linha += 1
+            cell.value = float(valor) if isinstance(valor, (int, float)) else valor
 
     # ============================================================
-    # SALVA ARQUIVO
+    # Salva a planilha
     # ============================================================
-    caminho_arquivo = os.path.join(pasta_saida, "tabela_estoques_valores.xlsx")
-    wb.save(caminho_arquivo)
+    caminho_planilha = os.path.join(pasta_saida, "tabela_estoques_valores.xlsx")
+    wb.save(caminho_planilha)
 
-    print(f"Planilha gerada com sucesso em: {caminho_arquivo}")
-
-    return caminho_arquivo
+    print(f"Planilha gerada com sucesso em: {caminho_planilha}")
+    return con
