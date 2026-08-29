@@ -133,7 +133,7 @@ def processar_cliente(pasta_cliente):
         "apato_097_CDEF_complementar",
         "apato_100_resumo1",
         "apato_102_tabelas_estoq_segur",
-        "apato_103_104_unificado_otimizado",
+        "apato_103_104_otimizado",
         "apato_105_junta_tabelas_estoq_segur1",
         "apato_106_apresenta1",
 
