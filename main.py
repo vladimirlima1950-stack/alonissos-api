@@ -27,6 +27,17 @@ def root():
     }
 
 # ============================================================
+# TESTE DE ENVIO DE E‑MAIL (MAILTRAP)
+# ============================================================
+
+from pipeline.teste_envio_email import run as teste_email_run
+
+@app.get("/teste-email")
+def teste_email():
+    return teste_email_run()
+
+
+# ============================================================
 # UPLOAD DE ARQUIVOS CSV
 # ============================================================
 
