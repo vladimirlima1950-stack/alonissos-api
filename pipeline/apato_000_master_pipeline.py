@@ -202,8 +202,7 @@ def processar_cliente(pasta_cliente):
 
 def apato_000_master_pipeline():
 
-    base_clientes = r"D:\AAAAAA_processamentos\clientes"
-
+    base_clientes = "/app/clientes"  # ou o caminho real dentro do container
     clientes = [
         os.path.join(base_clientes, nome)
         for nome in os.listdir(base_clientes)
