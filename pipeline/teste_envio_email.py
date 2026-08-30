@@ -1,5 +1,4 @@
-@app.get("/teste-email")
-def teste_email():
+def run():
     import smtplib
     from email.mime.text import MIMEText
 

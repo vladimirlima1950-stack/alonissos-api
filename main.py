@@ -1,6 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Request
 import os
-import json
 import smtplib
 import ssl
 import threading
@@ -9,7 +8,7 @@ from email.message import EmailMessage
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
 
-# Importa o teste de envio de e-mail (Mailtrap)
+# Importa a função run() do teste de e-mail
 from pipeline.teste_envio_email import run as teste_email_run
 
 app = FastAPI()
@@ -31,7 +30,7 @@ def root():
     }
 
 # ============================================================
-# TESTE DE ENVIO DE E‑MAIL (MAILTRAP)
+# TESTE DE ENVIO DE E‑MAIL
 # ============================================================
 
 @app.get("/teste-email")
@@ -78,7 +77,6 @@ def enviar_email_python(cliente, email_destino, anexos):
         <p>Atenciosamente,<br>MUPE Consultoria</p>
     """, subtype="html")
 
-    # Anexos
     for arquivo in anexos:
         try:
             with open(arquivo, "rb") as f:
@@ -96,19 +94,16 @@ def enviar_email_python(cliente, email_destino, anexos):
     try:
         with smtplib.SMTP("smtp.titan.email", 587) as smtp:
             smtp.starttls(context=contexto)
-            smtp.login("vladimir.lima@mupeconsult.com", "Vlagoshost1950#")
+            smtp.login("vladimir.lima@mupeconsult.com", "SENHA_AQUI")
 
-            try:
-                smtp.send_message(msg)
-                print("EMAIL OK — mensagem enviada com sucesso")
-            except Exception as e:
-                print("EMAIL ERRO:", e)
+            smtp.send_message(msg)
+            print("EMAIL OK — mensagem enviada com sucesso")
 
     except Exception as e:
         print(f"ERRO ao enviar e‑mail: {e}")
 
 # ============================================================
-# PROCESSAMENTO COMPLETO EM BACKGROUND (SEM TIMEOUT)
+# PROCESSAMENTO COMPLETO EM BACKGROUND
 # ============================================================
 
 @app.post("/processar/{cliente}")
@@ -124,7 +119,6 @@ def processar(request: Request, cliente: str):
 
     pasta_cliente = os.path.join(BASE_CLIENTES, cliente)
 
-    # Garante estrutura mínima
     pasta_entrada = os.path.join(pasta_cliente, "entrada")
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     pasta_saida = os.path.join(pasta_cliente, "saida")
@@ -135,7 +129,6 @@ def processar(request: Request, cliente: str):
     os.makedirs(pasta_saida, exist_ok=True)
     os.makedirs(pasta_logs, exist_ok=True)
 
-    # Função que roda em background
     def tarefa_background():
         try:
             print("PROCESSAMENTO EM BACKGROUND INICIADO")
@@ -157,10 +150,8 @@ def processar(request: Request, cliente: str):
         except Exception as e:
             print("ERRO NO PROCESSAMENTO EM BACKGROUND:", e)
 
-    # Dispara a thread
     threading.Thread(target=tarefa_background).start()
 
-    # Resposta imediata para evitar timeout
     return {
         "status": "OK",
         "mensagem": "Processamento iniciado. O e-mail será enviado automaticamente ao final."
