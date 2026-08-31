@@ -59,13 +59,13 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
     }
 
 # ============================================================
-# FUNÇÃO DE ENVIO DE E‑MAIL DIRETO PELO RAILWAY
+# FUNÇÃO DE ENVIO DE E‑MAIL (CORRIGIDA PARA MAILTRAP)
 # ============================================================
 
 def enviar_email_python(cliente, email_destino, anexos):
     msg = EmailMessage()
     msg["Subject"] = f"Relatórios gerados para o cliente {cliente}"
-    msg["From"] = "vladimir.lima@mupeconsult.com"
+    msg["From"] = os.getenv("MAIL_FROM")
     msg["To"] = email_destino
 
     msg.set_content("Relatórios anexados.")
@@ -92,9 +92,14 @@ def enviar_email_python(cliente, email_destino, anexos):
     contexto = ssl.create_default_context()
 
     try:
-        with smtplib.SMTP("smtp.titan.email", 587) as smtp:
+        smtp_server = os.getenv("MAIL_SERVER")
+        smtp_port = int(os.getenv("MAIL_PORT"))
+        smtp_user = os.getenv("MAIL_USERNAME")
+        smtp_pass = os.getenv("MAIL_PASSWORD")
+
+        with smtplib.SMTP(smtp_server, smtp_port) as smtp:
             smtp.starttls(context=contexto)
-            smtp.login("vladimir.lima@mupeconsult.com", "SENHA_AQUI")
+            smtp.login(smtp_user, smtp_pass)
 
             smtp.send_message(msg)
             print("EMAIL OK — mensagem enviada com sucesso")
