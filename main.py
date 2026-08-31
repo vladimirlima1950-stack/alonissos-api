@@ -156,6 +156,7 @@ def processar(request: Request, cliente: str):
             processar_cliente(pasta_cliente)
 
             anexos = [
+                f"/app/clientes/{cliente}/saida/tabela_apres1.xlsx",
                 f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
                 f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
                 f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
