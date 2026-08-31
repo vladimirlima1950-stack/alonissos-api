@@ -29,6 +29,12 @@ def root():
         "teste_email": "/teste-email"
     }
 
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 # ============================================================
 # TESTE DE ENVIO DE E‑MAIL
 # ============================================================
