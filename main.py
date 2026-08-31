@@ -1,17 +1,7 @@
-from fastapi import FastAPI
-
-app = FastAPI()
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-
 from fastapi import FastAPI, UploadFile, File, Request
 import os
 import smtplib
 import ssl
-import threading
 from email.message import EmailMessage
 
 # Importa o pipeline mestre
@@ -52,6 +42,7 @@ def health():
 def teste_email():
     return teste_email_run()
 
+
 # ============================================================
 # UPLOAD DE ARQUIVOS CSV
 # ============================================================
@@ -73,8 +64,9 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
         "mensagem": f"Arquivo {campo}.csv recebido para o cliente {cliente}"
     }
 
+
 # ============================================================
-# FUNÇÃO DE ENVIO DE E‑MAIL (CORRIGIDA PARA MAILTRAP)
+# FUNÇÃO DE ENVIO DE E‑MAIL (MAILTRAP)
 # ============================================================
 
 def enviar_email_python(cliente, email_destino, anexos):
@@ -122,8 +114,9 @@ def enviar_email_python(cliente, email_destino, anexos):
     except Exception as e:
         print(f"ERRO ao enviar e‑mail: {e}")
 
+
 # ============================================================
-# PROCESSAMENTO COMPLETO EM BACKGROUND
+# PROCESSAMENTO COMPLETO (SEM THREADING)
 # ============================================================
 
 @app.post("/processar/{cliente}")
@@ -149,31 +142,27 @@ def processar(request: Request, cliente: str):
     os.makedirs(pasta_saida, exist_ok=True)
     os.makedirs(pasta_logs, exist_ok=True)
 
-    def tarefa_background():
-        try:
-            print("PROCESSAMENTO EM BACKGROUND INICIADO")
+    print("PROCESSAMENTO INICIADO")
 
-            processar_cliente(pasta_cliente)
+    # Executa o pipeline normalmente
+    processar_cliente(pasta_cliente)
 
-            anexos = [
-                f"/app/clientes/{cliente}/saida/tabela_apres1.xlsx",
-                f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
-                f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
-                f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
-                f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
-                f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
-            ]
+    # Lista completa de anexos
+    anexos = [
+        f"/app/clientes/{cliente}/saida/tabela_apres1.xlsx",
+        f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
+        f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
+        f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
+        f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
+        f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
+    ]
 
-            enviar_email_python(cliente, email_cliente, anexos)
+    # Envia o e-mail
+    enviar_email_python(cliente, email_cliente, anexos)
 
-            print("PROCESSAMENTO + EMAIL FINALIZADOS")
-
-        except Exception as e:
-            print("ERRO NO PROCESSAMENTO EM BACKGROUND:", e)
-
-    threading.Thread(target=tarefa_background).start()
+    print("PROCESSAMENTO + EMAIL FINALIZADOS")
 
     return {
         "status": "OK",
-        "mensagem": "Processamento iniciado. O e-mail será enviado automaticamente ao final."
+        "mensagem": "Processamento concluído e e‑mail enviado."
     }
