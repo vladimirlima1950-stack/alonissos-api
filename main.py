@@ -3,6 +3,7 @@ import os
 import smtplib
 import ssl
 from email.message import EmailMessage
+import subprocess
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -116,7 +117,7 @@ def enviar_email_python(cliente, email_destino, anexos):
 
 
 # ============================================================
-# PROCESSAMENTO COMPLETO (SEM THREADING)
+# PROCESSAMENTO EM BACKGROUND (SEM TIMEOUT)
 # ============================================================
 
 @app.post("/processar/{cliente}")
@@ -132,6 +133,7 @@ def processar(request: Request, cliente: str):
 
     pasta_cliente = os.path.join(BASE_CLIENTES, cliente)
 
+    # Cria as pastas necessárias
     pasta_entrada = os.path.join(pasta_cliente, "entrada")
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     pasta_saida = os.path.join(pasta_cliente, "saida")
@@ -142,27 +144,46 @@ def processar(request: Request, cliente: str):
     os.makedirs(pasta_saida, exist_ok=True)
     os.makedirs(pasta_logs, exist_ok=True)
 
-    print("PROCESSAMENTO INICIADO")
+    print("PROCESSAMENTO AGENDADO — rodará em background")
 
-    # Executa o pipeline normalmente
-    processar_cliente(pasta_cliente)
+    # ============================================================
+    # DISPARA O PROCESSAMENTO EM BACKGROUND
+    # ============================================================
 
-    # Lista completa de anexos
-    anexos = [
-        f"/app/clientes/{cliente}/saida/tabela_apres1.xlsx",
-        f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
-        f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
-        f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
-        f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
-        f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
-    ]
+    subprocess.Popen([
+        "python3",
+        "-c",
+        f"""
+import os
+from pipeline.apato_000_master_pipeline import processar_cliente
+from main import enviar_email_python
 
-    # Envia o e-mail
-    enviar_email_python(cliente, email_cliente, anexos)
+cliente = '{cliente}'
+email_cliente = '{email_cliente}'
 
-    print("PROCESSAMENTO + EMAIL FINALIZADOS")
+pasta_cliente = '/app/clientes/' + cliente
+
+processar_cliente(pasta_cliente)
+
+anexos = [
+    f"/app/clientes/{cliente}/saida/tabela_apres1.xlsx",
+    f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
+    f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
+    f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
+    f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
+    f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
+]
+
+enviar_email_python(cliente, email_cliente, anexos)
+print("PROCESSAMENTO + EMAIL FINALIZADOS")
+        """
+    ])
+
+    # ============================================================
+    # RETORNA IMEDIATAMENTE PARA O PHP (SEM ESPERAR)
+    # ============================================================
 
     return {
         "status": "OK",
-        "mensagem": "Processamento concluído e e‑mail enviado."
+        "mensagem": "Processamento iniciado em background. O e‑mail será enviado automaticamente."
     }
