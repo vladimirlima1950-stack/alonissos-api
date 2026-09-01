@@ -10,7 +10,7 @@ url = "https://api.resend.com/emails"
 
 payload = {
     "from": "Vladimir de Lima<onboarding@resend.dev>",
-    "to": ["vladimir.lima.1950@gmail.com"],
+    "to": ["vladimir.lima.mupe.consultoria@gmail.com"],
     "subject": "Teste API Resend",
     "html": "<p>Este é um teste via API HTTP.</p>"
 }
