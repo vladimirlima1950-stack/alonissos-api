@@ -3,21 +3,15 @@ import requests
 
 print("Testando API HTTP do Mailtrap...")
 
-API_TOKEN = os.getenv("MAILTRAP_TOKEN")
+API_TOKEN = os.getenv("RESEND_API_KEY")
 
-url = "https://send.api.mailtrap.io/api/send"
+url = "https://api.resend.com/emails"
 
 payload = {
-    "from": {
-        "email": "teste@mupe.com.br"
-    },
-    "to": [
-        {
-            "email": "teste@mupe.com.br"
-        }
-    ],
-    "subject": "Teste API Mailtrap",
-    "text": "Este é um teste via API HTTP."
+    "from": "Vladimir de Lima<onboarding@resend.dev>",
+    "to": ["vladimir.lima.1950@gmail.com"],
+    "subject": "Teste API Resend",
+    "html": "<p>Este é um teste via API HTTP.</p>"
 }
 
 headers = {
