@@ -26,3 +26,4 @@ try:
     print("Resposta:", r.text)
 except Exception as e:
     print("Erro ao chamar API:", e)
+    print("API_TOKEN:", API_TOKEN)
