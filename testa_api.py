@@ -1,7 +1,8 @@
 import os
 import requests
 
-print("Testando API HTTP do Mailtrap...")
+
+print("Testando API HTTP do Resend...")
 
 API_TOKEN = os.getenv("RESEND_API_KEY")
 
