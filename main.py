@@ -3,6 +3,7 @@ import os
 import ssl
 import subprocess
 import requests
+import base64
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -76,7 +77,6 @@ def enviar_email_resend(cliente, email_destino, anexos):
         print("ERRO: RESEND_API_KEY não encontrada no ambiente Railway.")
         return
 
-    # Corpo HTML
     html_body = f"""
         <h2>Relatórios Gerados com Sucesso</h2>
         <p>Olá,</p>
@@ -85,14 +85,13 @@ def enviar_email_resend(cliente, email_destino, anexos):
         <p>Atenciosamente,<br>MUPE Consultoria</p>
     """
 
-    # Constrói anexos no formato Resend
     lista_anexos = []
     for arquivo in anexos:
         try:
             with open(arquivo, "rb") as f:
                 lista_anexos.append({
                     "filename": os.path.basename(arquivo),
-                    "content": f.read(),
+                    "content": base64.b64encode(f.read()).decode(),
                     "type": "application/octet-stream"
                 })
         except Exception as e:
