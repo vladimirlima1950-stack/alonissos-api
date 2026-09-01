@@ -1,9 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, Request
 import os
-import smtplib
 import ssl
-from email.message import EmailMessage
 import subprocess
+import requests
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -67,53 +66,57 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
 
 
 # ============================================================
-# FUNÇÃO DE ENVIO DE E‑MAIL (MAILTRAP)
+# NOVA FUNÇÃO DE ENVIO DE E‑MAIL (RESEND API)
 # ============================================================
 
-def enviar_email_python(cliente, email_destino, anexos):
-    msg = EmailMessage()
-    msg["Subject"] = f"Relatórios gerados para o cliente {cliente}"
-    msg["From"] = os.getenv("MAIL_FROM")
-    msg["To"] = email_destino
+def enviar_email_resend(cliente, email_destino, anexos):
 
-    msg.set_content("Relatórios anexados.")
-    msg.add_alternative(f"""
+    api_key = os.getenv("RESEND_API_KEY")
+    if not api_key:
+        print("ERRO: RESEND_API_KEY não encontrada no ambiente Railway.")
+        return
+
+    # Corpo HTML
+    html_body = f"""
         <h2>Relatórios Gerados com Sucesso</h2>
         <p>Olá,</p>
         <p>Os relatórios do cliente <strong>{cliente}</strong> foram processados com sucesso.</p>
         <p>As planilhas estão anexadas a este e‑mail.</p>
         <p>Atenciosamente,<br>MUPE Consultoria</p>
-    """, subtype="html")
+    """
 
+    # Constrói anexos no formato Resend
+    lista_anexos = []
     for arquivo in anexos:
         try:
             with open(arquivo, "rb") as f:
-                msg.add_attachment(
-                    f.read(),
-                    maintype="application",
-                    subtype="octet-stream",
-                    filename=os.path.basename(arquivo)
-                )
+                lista_anexos.append({
+                    "filename": os.path.basename(arquivo),
+                    "content": f.read(),
+                    "type": "application/octet-stream"
+                })
         except Exception as e:
             print(f"ERRO ao anexar {arquivo}: {e}")
 
-    contexto = ssl.create_default_context()
+    payload = {
+        "from": "MUPE Consultoria <onboarding@resend.dev>",
+        "to": [email_destino],
+        "subject": f"Relatórios gerados para o cliente {cliente}",
+        "html": html_body,
+        "attachments": lista_anexos
+    }
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
 
     try:
-        smtp_server = os.getenv("MAIL_SERVER")
-        smtp_port = int(os.getenv("MAIL_PORT"))
-        smtp_user = os.getenv("MAIL_USERNAME")
-        smtp_pass = os.getenv("MAIL_PASSWORD")
-
-        with smtplib.SMTP(smtp_server, smtp_port) as smtp:
-            smtp.starttls(context=contexto)
-            smtp.login(smtp_user, smtp_pass)
-
-            smtp.send_message(msg)
-            print("EMAIL OK — mensagem enviada com sucesso")
-
+        r = requests.post("https://api.resend.com/emails", json=payload, headers=headers)
+        print("RESEND — Status:", r.status_code)
+        print("RESEND — Resposta:", r.text)
     except Exception as e:
-        print(f"ERRO ao enviar e‑mail: {e}")
+        print("ERRO ao enviar via Resend:", e)
 
 
 # ============================================================
@@ -156,7 +159,7 @@ def processar(request: Request, cliente: str):
         f"""
 import os
 from pipeline.apato_000_master_pipeline import processar_cliente
-from main import enviar_email_python
+from main import enviar_email_resend
 
 cliente = '{cliente}'
 email_cliente = '{email_cliente}'
@@ -174,14 +177,10 @@ anexos = [
     f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
 ]
 
-enviar_email_python(cliente, email_cliente, anexos)
+enviar_email_resend(cliente, email_cliente, anexos)
 print("PROCESSAMENTO + EMAIL FINALIZADOS")
         """
     ])
-
-    # ============================================================
-    # RETORNA IMEDIATAMENTE PARA O PHP (SEM ESPERAR)
-    # ============================================================
 
     return {
         "status": "OK",
