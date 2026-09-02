@@ -67,7 +67,7 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
 
 
 # ============================================================
-# NOVA FUNÇÃO DE ENVIO DE E‑MAIL (RESEND API)
+# FUNÇÃO DE ENVIO DE E‑MAIL (RESEND API)
 # ============================================================
 
 def enviar_email_resend(cliente, email_destino, anexos):
@@ -130,7 +130,7 @@ def processar(request: Request, cliente: str):
     if not email_cliente:
         return {
             "status": "ERRO",
-            "mensagem": "E-mail do cliente não foi enviado pelo HostGator."
+            "mensagem": "E-mail do cliente não foi enviado pelo site."
         }
 
     pasta_cliente = os.path.join(BASE_CLIENTES, cliente)
