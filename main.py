@@ -98,7 +98,7 @@ def enviar_email_resend(cliente, email_destino, anexos):
             print(f"ERRO ao anexar {arquivo}: {e}")
 
     payload = {
-        "from": "MUPE Consultoria <onboarding@resend.dev>",
+        "from": "MUPE Consultoria <vladimir.lima@mupeconsult.com>",
         "to": [email_destino],
         "subject": f"Relatórios gerados para o cliente {cliente}",
         "html": html_body,
