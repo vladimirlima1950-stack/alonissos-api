@@ -144,6 +144,15 @@ def processar_cliente(pasta_cliente):
         "apato_gera_plan_tb_estoques_segurança",
         "apato_gera_plan_tb_estoques_valores_fim",
         "apato_gera_plan_tb_tempo_programas",
+
+        # ============================================================
+        # MÓDULOS DO MRP (NOVOS)
+        # ============================================================
+        "apato_mrp_calculo",
+        "apato_mrp_gera_planilha_visual",
+        "apato_envia_plan_mrp",
+
+
     ]
 
     # ============================================================
@@ -157,7 +166,6 @@ def processar_cliente(pasta_cliente):
         log(f"Executando: {programa}")
 
         try:
-            # IMPORT CORRIGIDO
             modulo = importlib.import_module(f"pipeline.{programa}")
             modulo.run(pasta_cliente)
 
@@ -202,7 +210,7 @@ def processar_cliente(pasta_cliente):
 
 def apato_000_master_pipeline():
 
-    base_clientes = "/app/clientes"  # ou o caminho real dentro do container
+    base_clientes = "/app/clientes"
     clientes = [
         os.path.join(base_clientes, nome)
         for nome in os.listdir(base_clientes)
