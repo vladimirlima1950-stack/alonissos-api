@@ -63,7 +63,7 @@ def run(pasta_cliente):
     ]
 
     colunas_fcst = [
-        'mês corrente',   # primeira previsão
+        'corr',   # primeira previsão
         'corr_mais1','corr_mais2','corr_mais3','corr_mais4','corr_mais5',
         'corr_mais6','corr_mais7','corr_mais8','corr_mais9','corr_mais10',
         'corr_mais11'
