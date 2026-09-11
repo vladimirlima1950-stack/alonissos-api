@@ -82,7 +82,7 @@ def run(pasta_cliente):
                 "sku": sku,
                 "mes_num": mes_num,
                 "demanda": demanda,
-                "previsao": 0mês
+                "previsao": 0
             })
 
         # 12 meses de previsão
