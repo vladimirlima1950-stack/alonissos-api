@@ -19,31 +19,26 @@ def run(pasta_cliente):
     # 1) Ler tabelas reais
     # ============================================================
 
-    # Custo unitário
     tb_custo = con.execute("""
         SELECT sku, custo_unit AS custo_unitario
         FROM tb_custo_orig
     """).df()
 
-    # Estoque atual
     tb_estoque = con.execute("""
         SELECT sku, qtde_orig AS estoque_atual
         FROM tb_estoques_orig
     """).df()
 
-    # Lead time
     tb_leadtime = con.execute("""
         SELECT sku, leadtime AS leadtime_dias
         FROM tb_leadtime_orig
     """).df()
 
-    # Demanda + Previsão
     tb_dmd_fcst = con.execute("""
         SELECT *
         FROM tb_dmd_fcst_res_fim
     """).df()
 
-    # Estoque de segurança (12 meses)
     tb_estoq_seg = con.execute("""
         SELECT *
         FROM tb_estoq_segur_12meses_res_fim
@@ -51,7 +46,6 @@ def run(pasta_cliente):
 
     # ============================================================
     # 2) Demandas (24 meses) e Previsões (12 meses)
-    #    mês corrente = primeira previsão
     # ============================================================
 
     colunas_dmd = [
@@ -63,7 +57,7 @@ def run(pasta_cliente):
     ]
 
     colunas_fcst = [
-        'corr',   # primeira previsão
+        'corr',
         'corr_mais1','corr_mais2','corr_mais3','corr_mais4','corr_mais5',
         'corr_mais6','corr_mais7','corr_mais8','corr_mais9','corr_mais10',
         'corr_mais11'
@@ -125,18 +119,18 @@ def run(pasta_cliente):
     df_seg_long = pd.DataFrame(linhas_seg)
 
     # ============================================================
-    # 4) Unir tudo em uma base única
+    # 4) Unir tudo
     # ============================================================
 
     base = df_dmd_fcst_long.merge(tb_estoque, on="sku", how="left")
     base = base.merge(tb_leadtime, on="sku", how="left")
     base = base.merge(df_seg_long, on=["sku", "mes_num"], how="left")
-    base = base.merge(tb_custo, on="sku", how="left")  # custo integrado
+    base = base.merge(tb_custo, on="sku", how="left")
 
     base = base.sort_values(["sku", "mes_num"])
 
     # ============================================================
-    # 5) Cálculo do MRP com custo
+    # 5) Cálculo MRP
     # ============================================================
 
     resultados = []
@@ -150,9 +144,12 @@ def run(pasta_cliente):
             demanda = row["demanda"] or 0
             previsao = row["previsao"] or 0
             estq_seg = row.get("estoque_seguranca", 0) or 0
-            leadtime = row.get("leadtime_dias", 30)
+
+            # Leadtime com regra de negócio: se faltar → 30 dias
+            leadtime_val = row.get("leadtime_dias", 30)
             if pd.isna(leadtime_val):
                 leadtime_val = 30
+
             custo_unit = row.get("custo_unitario", 0) or 0
 
             if i == 0:
@@ -167,24 +164,11 @@ def run(pasta_cliente):
             estq_proj = estq_inicial - demanda + ordem_planejada
             estq_proj_anterior = estq_proj
 
-            # Custo da ordem planejada
             custo_ordem = ordem_planejada * custo_unit
 
-            # Datas fictícias baseadas em mes_num
+            # Datas fictícias
             data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (row["mes_num"] - 1))
-            # Leadtime pode ser NaN → substitui por 30 conforme regra de negócio
-            leadtime_val = row.get("leadtime_dias", 30)
-            if pd.isna(leadtime_val):
-                leadtime_val = 30
-            data_liberacao = (
-            data_chegada - timedelta(days=int(leadtime_val))
-            if leadtime_val else None
-            )
-
-
-
-            data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (row["mes_num"] - 1))
-            data_liberacao = data_chegada - timedelta(days=int(leadtime)) if leadtime else None
+            data_liberacao = data_chegada - timedelta(days=int(leadtime_val))
 
             resultados.append({
                 "sku": sku,
