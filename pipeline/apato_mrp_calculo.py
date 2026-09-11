@@ -82,7 +82,7 @@ def run(pasta_cliente):
                 "sku": sku,
                 "mes_num": mes_num,
                 "demanda": demanda,
-                "previsao": 0
+                "previsao": 0mês
             })
 
         # 12 meses de previsão
@@ -169,6 +169,18 @@ def run(pasta_cliente):
             custo_ordem = ordem_planejada * custo_unit
 
             # Datas fictícias baseadas em mes_num
+            data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (row["mes_num"] - 1))
+            # Leadtime pode ser NaN → substitui por 30 conforme regra de negócio
+            leadtime_val = row.get("leadtime_dias", 30)
+            if pd.isna(leadtime_val):
+                leadtime_val = 30
+            data_liberacao = (
+            data_chegada - timedelta(days=int(leadtime_val))
+            if leadtime_val else None
+            )
+
+
+
             data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (row["mes_num"] - 1))
             data_liberacao = data_chegada - timedelta(days=int(leadtime)) if leadtime else None
 
