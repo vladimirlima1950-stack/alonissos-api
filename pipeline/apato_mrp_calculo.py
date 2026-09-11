@@ -150,7 +150,9 @@ def run(pasta_cliente):
             demanda = row["demanda"] or 0
             previsao = row["previsao"] or 0
             estq_seg = row.get("estoque_seguranca", 0) or 0
-            leadtime = row.get("leadtime_dias", 0) or 0
+            leadtime = row.get("leadtime_dias", 30)
+            if pd.isna(leadtime_val):
+                leadtime_val = 30
             custo_unit = row.get("custo_unitario", 0) or 0
 
             if i == 0:
