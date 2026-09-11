@@ -72,7 +72,7 @@ def run(pasta_cliente):
     linhas = []
 
     for _, row in tb_dmd_fcst.iterrows():
-        sku = row["sku número"]
+        sku = row["sku"]
 
         # 24 meses de demanda
         for i, col in enumerate(colunas_dmd):
