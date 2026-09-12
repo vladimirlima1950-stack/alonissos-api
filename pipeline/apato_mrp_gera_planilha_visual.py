@@ -1,13 +1,12 @@
 # pipeline/apato_mrp_gera_planilha_visual.py
-# Gera planilha Excel avançada do MRP, com dashboard, gráficos e abas detalhadas.
+# Gera planilha Excel avançada do MRP, com abas detalhadas (sem gráfico por enquanto).
 
 import os
 import duckdb
 import pandas as pd
 from datetime import datetime
 from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
-from openpyxl.chart import LineChart, Reference
+from openpyxl.styles import Font
 
 def run(pasta_cliente):
 
@@ -95,7 +94,7 @@ def run(pasta_cliente):
         ws_custo.append(list(row.values))
 
     # ============================================================
-    # 7) Aba: Dashboard
+    # 7) Aba: Dashboard (sem gráfico)
     # ============================================================
 
     ws_dash = wb.create_sheet("Dashboard")
@@ -116,24 +115,7 @@ def run(pasta_cliente):
     ws_dash["B6"] = total_ordens
 
     # ============================================================
-    # 8) Gráfico de custo mensal
-    # ============================================================
-
-    chart = LineChart()
-    chart.title = "Custo Mensal Planejado"
-    chart.y_axis.title = "Custo"
-    chart.x_axis.title = "Mês"
-
-    data = Reference(ws_custo, min_col=2, min_row=1, max_row=len(custo_mes) + 1)
-    categorias = Reference(ws_custo, min_col=1, min_row=2, max_row=len(custo_mes) + 1)
-
-    chart.add_data(data, titles_from_data=True)
-    chart.set_categories(categorias)
-
-    ws_dash.add_chart(chart, "D5")
-
-    # ============================================================
-    # 9) Salvar planilha
+    # 8) Salvar planilha
     # ============================================================
 
     pasta_saida = os.path.join(pasta_cliente, "saida")
@@ -143,7 +125,7 @@ def run(pasta_cliente):
     wb.save(caminho_planilha)
 
     # ============================================================
-    # 10) Registrar tempo no pipeline
+    # 9) Registrar tempo no pipeline
     # ============================================================
 
     fim = datetime.now()

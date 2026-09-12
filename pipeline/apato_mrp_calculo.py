@@ -189,10 +189,6 @@ def run(pasta_cliente):
 
             estq_proj_anterior = estq_proj
 
-            # Datas fictícias (mantidas)
-            data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (mes_num - 1))
-            data_liberacao = data_chegada - timedelta(days=int(leadtime_val))
-
             resultados.append({
                 "sku": sku,
                 "mes_num": mes_num,
@@ -204,8 +200,6 @@ def run(pasta_cliente):
                 "necessidade_liquida": necessidade_liquida,
                 "ordem_planejada": ordem_planejada,
                 "custo_ordem_planejada": ordem_planejada * custo_unit,
-                "data_liberacao": data_liberacao,
-                "data_chegada": data_chegada,
                 "leadtime_dias": leadtime_val
             })
 
