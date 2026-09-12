@@ -1,12 +1,11 @@
 # pipeline/apato_mrp_gera_planilha_visual.py
-# Gera planilha Excel avançada do MRP, com abas detalhadas (sem gráfico por enquanto).
+# Gera planilha Excel do MRP, com abas essenciais (sem gráfico, sem dashboard, sem custos).
 
 import os
 import duckdb
 import pandas as pd
 from datetime import datetime
 from openpyxl import Workbook
-from openpyxl.styles import Font
 
 def run(pasta_cliente):
 
@@ -68,54 +67,22 @@ def run(pasta_cliente):
 
     ws_sku = wb.create_sheet("Dados do SKU")
 
+    # resumo sem ordem_planejada e sem custo_ordem_planejada
     resumo_sku = df_mrp.groupby("sku").agg({
         "demanda": "sum",
         "previsao": "sum",
-        "ordem_planejada": "sum",
-        "custo_ordem_planejada": "sum",
         "leadtime_dias": "max"
     }).reset_index()
+
+    # adicionar custo_unitario
+    resumo_sku = resumo_sku.merge(df_custo, on="sku", how="left")
 
     ws_sku.append(list(resumo_sku.columns))
     for _, row in resumo_sku.iterrows():
         ws_sku.append(list(row.values))
 
     # ============================================================
-    # 6) Aba: Custos Consolidados
-    # ============================================================
-
-    ws_custo = wb.create_sheet("Custos")
-
-    custo_mes = df_mrp.groupby("mes_num")["custo_ordem_planejada"].sum().reset_index()
-    custo_mes.columns = ["mes_num", "custo_total"]
-
-    ws_custo.append(["mes_num", "custo_total"])
-    for _, row in custo_mes.iterrows():
-        ws_custo.append(list(row.values))
-
-    # ============================================================
-    # 7) Aba: Dashboard (sem gráfico)
-    # ============================================================
-
-    ws_dash = wb.create_sheet("Dashboard")
-
-    ws_dash["A1"] = "Dashboard MRP Avançado"
-    ws_dash["A1"].font = Font(size=16, bold=True)
-
-    ws_dash["A3"] = "Resumo Geral"
-    ws_dash["A3"].font = Font(size=14, bold=True)
-
-    total_custo = df_mrp["custo_ordem_planejada"].sum()
-    total_ordens = df_mrp["ordem_planejada"].sum()
-
-    ws_dash["A5"] = "Custo Total Planejado:"
-    ws_dash["B5"] = total_custo
-
-    ws_dash["A6"] = "Total de Ordens Planejadas:"
-    ws_dash["B6"] = total_ordens
-
-    # ============================================================
-    # 8) Salvar planilha
+    # 6) Salvar planilha
     # ============================================================
 
     pasta_saida = os.path.join(pasta_cliente, "saida")
@@ -125,7 +92,7 @@ def run(pasta_cliente):
     wb.save(caminho_planilha)
 
     # ============================================================
-    # 9) Registrar tempo no pipeline
+    # 7) Registrar tempo no pipeline
     # ============================================================
 
     fim = datetime.now()
