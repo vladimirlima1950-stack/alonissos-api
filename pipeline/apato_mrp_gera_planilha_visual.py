@@ -136,7 +136,10 @@ def run(pasta_cliente):
     # 9) Salvar planilha
     # ============================================================
 
-    caminho_planilha = os.path.join(pasta_processamento, "mrp.xlsx")
+    pasta_saida = os.path.join(pasta_cliente, "saida")
+    os.makedirs(pasta_saida, exist_ok=True)
+
+    caminho_planilha = os.path.join(pasta_saida, "mrp.xlsx")
     wb.save(caminho_planilha)
 
     # ============================================================

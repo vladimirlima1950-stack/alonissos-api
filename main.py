@@ -167,14 +167,10 @@ pasta_cliente = '/app/clientes/' + cliente
 
 processar_cliente(pasta_cliente)
 
-anexos = [
-    f"/app/clientes/{cliente}/saida/tabela_apres1.xlsx",
-    f"/app/clientes/{cliente}/saida/tabela_apres2.xlsx",
-    f"/app/clientes/{cliente}/saida/tabela_demandas_previsoes.xlsx",
-    f"/app/clientes/{cliente}/saida/tabela_estoques_segurança.xlsx",
-    f"/app/clientes/{cliente}/saida/tabela_estoques_valores.xlsx",
-    f"/app/clientes/{cliente}/saida/tabela_tempo_programa.xlsx"
-]
+import glob
+
+pasta_saida = f"/app/clientes/{cliente}/saida"
+anexos = glob.glob(f"{pasta_saida}/*")
 
 enviar_email_resend(cliente, email_cliente, anexos)
 print("PROCESSAMENTO + EMAIL FINALIZADOS")
