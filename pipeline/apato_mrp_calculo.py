@@ -182,7 +182,9 @@ def run(pasta_cliente):
                 "ordem_planejada": ordem_planejada,
                 "custo_ordem_planejada": custo_ordem,
                 "data_liberacao": data_liberacao,
-                "data_chegada": data_chegada
+                "data_chegada": data_chegada,
+                "leadtime_dias": leadtime_val
+
             })
 
     df_mrp = pd.DataFrame(resultados)
