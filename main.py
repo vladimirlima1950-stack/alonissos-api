@@ -70,7 +70,7 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
 # FUNÇÃO DE ENVIO DE E‑MAIL (RESEND API)
 # ============================================================
 
-def enviar_email_resend(cliente, email_destino, anexos):
+def enviar_email_resend(nome_cliente, email_destino, anexos):
 
     api_key = os.getenv("RESEND_API_KEY")
     if not api_key:
@@ -79,7 +79,7 @@ def enviar_email_resend(cliente, email_destino, anexos):
 
     html_body = f"""
         <h2>Relatórios Gerados com Sucesso</h2>
-        <p>Olá,</p>
+        <p>Olá, {nome_cliente}!</p>
         <p>Os seus relatórios foram processados com sucesso.</p>
         <p>As planilhas resultantes do processamento estão anexadas a este e‑mail.</p>
         <p>Atenciosamente,<br>MUPE Consultoria</p>
@@ -126,7 +126,7 @@ def enviar_email_resend(cliente, email_destino, anexos):
 def processar(request: Request, cliente: str):
 
     email_cliente = request.query_params.get("email")
-    nome_cliente = request.query_params.get("nome") 
+    nome_cliente = request.query_params.get("nome")
 
     if not email_cliente:
         return {
@@ -161,10 +161,9 @@ import os
 from pipeline.apato_000_master_pipeline import processar_cliente
 from main import enviar_email_resend
 
-cliente = '{nome_cliente}'
+cliente = '{cliente}'          # ← ID correto
 email_cliente = '{email_cliente}'
-nome_cliente = '{nome_cliente}'
-
+nome_cliente = '{nome_cliente}'  # ← nome correto
 
 pasta_cliente = '/app/clientes/' + cliente
 
