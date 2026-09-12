@@ -100,7 +100,7 @@ def enviar_email_resend(cliente, email_destino, anexos):
     payload = {
         "from": "MUPE Consultoria <vladimir.lima@mupeconsult.com>",
         "to": [email_destino],
-        "subject": f"Relatórios gerados para o cliente {cliente}",
+        "subject": f"Relatórios gerados para o cliente {nome_cliente}",
         "html": html_body,
         "attachments": lista_anexos
     }
@@ -161,7 +161,7 @@ import os
 from pipeline.apato_000_master_pipeline import processar_cliente
 from main import enviar_email_resend
 
-cliente = '{cliente}'
+cliente = '{nome_cliente}'
 email_cliente = '{email_cliente}'
 nome_cliente = '{nome_cliente}'
 
@@ -175,7 +175,7 @@ import glob
 pasta_saida = f"/app/clientes/{cliente}/saida"
 anexos = glob.glob(f"{pasta_saida}/*")
 
-enviar_email_resend(cliente, email_cliente, anexos)
+enviar_email_resend(nome_cliente, email_cliente, anexos)
 print("PROCESSAMENTO + EMAIL FINALIZADOS")
         """
     ])
