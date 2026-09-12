@@ -160,13 +160,15 @@ def run(pasta_cliente):
             mes_num = row["mes_num"]
 
             # ============================
-            # Meses 1–24: histórico → sem ordens
+            # Meses 1–24: histórico → sem ordens, sem consumo de estoque
             # ============================
             if mes_num <= 24:
                 ordem_planejada = 0
                 necessidade_bruta = 0
                 necessidade_liquida = 0
-                estq_proj = estq_inicial - demanda
+
+                # Estoque projetado não é consumido no histórico
+                estq_proj = estq_inicial
 
             else:
                 # ============================
@@ -175,7 +177,6 @@ def run(pasta_cliente):
 
                 # Leadtime convertido em meses (ceil)
                 meses_voltar = int((leadtime_val + 29) // 30)
-
                 mes_liberacao_num = mes_num - meses_voltar
                 if mes_liberacao_num < 25:
                     mes_liberacao_num = 25  # nunca liberar em meses históricos
