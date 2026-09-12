@@ -126,6 +126,7 @@ def enviar_email_resend(cliente, email_destino, anexos):
 def processar(request: Request, cliente: str):
 
     email_cliente = request.query_params.get("email")
+    nome_cliente = request.query_params.get("nome") 
 
     if not email_cliente:
         return {
