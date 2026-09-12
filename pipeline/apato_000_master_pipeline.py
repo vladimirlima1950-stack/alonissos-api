@@ -150,7 +150,7 @@ def processar_cliente(pasta_cliente):
         # ============================================================
         "apato_mrp_calculo",
         "apato_mrp_gera_planilha_visual",
-        "apato_envia_plan_mrp",
+        # "apato_envia_plan_mrp",
 
 
     ]
