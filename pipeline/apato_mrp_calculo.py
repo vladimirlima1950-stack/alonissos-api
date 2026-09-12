@@ -139,6 +139,11 @@ def run(pasta_cliente):
         grupo = grupo.copy().reset_index(drop=True)
         estq_proj_anterior = None
 
+
+
+
+
+
         for i, row in grupo.iterrows():
 
             demanda = row["demanda"] or 0
@@ -157,12 +162,26 @@ def run(pasta_cliente):
             else:
                 estq_inicial = estq_proj_anterior
 
-            necessidade_bruta = max(0, demanda - estq_inicial)
-            necessidade_liquida = max(0, necessidade_bruta - estq_seg)
-            ordem_planejada = necessidade_liquida if necessidade_liquida > 0 else 0
+            # ============================
+            # CORREÇÃO: meses 1–24 NÃO geram ordens
+            # ============================    
 
-            estq_proj = estq_inicial - demanda + ordem_planejada
+            if row["mes_num"] <= 24:
+                ordem_planejada = 0
+                necessidade_bruta = 0
+                necessidade_liquida = 0
+                estq_proj = estq_inicial - demanda  # apenas consome histórico
+            else:
+
+                # meses 25+ → previsão → cálculo completo
+                necessidade_bruta = max(0, previsao - estq_inicial)
+                necessidade_liquida = max(0, necessidade_bruta - estq_seg)
+                ordem_planejada = necessidade_liquida if necessidade_liquida > 0 else 0
+                estq_proj = estq_inicial - previsao + ordem_planejada
+
+          
             estq_proj_anterior = estq_proj
+
 
             custo_ordem = ordem_planejada * custo_unit
 
