@@ -80,8 +80,8 @@ def enviar_email_resend(cliente, email_destino, anexos):
     html_body = f"""
         <h2>Relatórios Gerados com Sucesso</h2>
         <p>Olá,</p>
-        <p>Os relatórios do cliente <strong>{cliente}</strong> foram processados com sucesso.</p>
-        <p>As planilhas estão anexadas a este e‑mail.</p>
+        <p>Os seus relatórios foram processados com sucesso.</p>
+        <p>As planilhas resultantes do processamento estão anexadas a este e‑mail.</p>
         <p>Atenciosamente,<br>MUPE Consultoria</p>
     """
 
@@ -163,6 +163,8 @@ from main import enviar_email_resend
 
 cliente = '{cliente}'
 email_cliente = '{email_cliente}'
+nome_cliente = '{nome_cliente}'
+
 
 pasta_cliente = '/app/clientes/' + cliente
 
