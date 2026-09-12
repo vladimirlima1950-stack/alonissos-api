@@ -68,7 +68,7 @@ def run(pasta_cliente):
     for _, row in tb_dmd_fcst.iterrows():
         sku = row["sku"]
 
-        # 24 meses de demanda
+        # 24 meses de demanda (histórico: meses 1–24)
         for i, col in enumerate(colunas_dmd):
             mes_num = i + 1
             demanda = row[col]
@@ -79,7 +79,7 @@ def run(pasta_cliente):
                 "previsao": 0
             })
 
-        # 12 meses de previsão
+        # 12 meses de previsão (meses 25–36)
         for i, col in enumerate(colunas_fcst):
             mes_num = 24 + i + 1
             previsao = row[col]
@@ -130,7 +130,7 @@ def run(pasta_cliente):
     base = base.sort_values(["sku", "mes_num"])
 
     # ============================================================
-    # 5) Cálculo MRP
+    # 5) Cálculo MRP (histórico + previsão com leadtime)
     # ============================================================
 
     resultados = []
@@ -139,59 +139,62 @@ def run(pasta_cliente):
         grupo = grupo.copy().reset_index(drop=True)
         estq_proj_anterior = None
 
-
-
-
-
-
         for i, row in grupo.iterrows():
 
             demanda = row["demanda"] or 0
             previsao = row["previsao"] or 0
             estq_seg = row.get("estoque_seguranca", 0) or 0
 
-            # Leadtime com regra de negócio: se faltar → 30 dias
             leadtime_val = row.get("leadtime_dias", 30)
             if pd.isna(leadtime_val):
                 leadtime_val = 30
 
             custo_unit = row.get("custo_unitario", 0) or 0
 
+            # Estoque inicial
             if i == 0:
                 estq_inicial = row.get("estoque_atual", 0) or 0
             else:
                 estq_inicial = estq_proj_anterior
 
-            # ============================
-            # CORREÇÃO: meses 1–24 NÃO geram ordens
-            # ============================    
+            mes_num = row["mes_num"]
 
-            if row["mes_num"] <= 24:
+            # ============================
+            # Meses 1–24: histórico → sem ordens
+            # ============================
+            if mes_num <= 24:
                 ordem_planejada = 0
                 necessidade_bruta = 0
                 necessidade_liquida = 0
-                estq_proj = estq_inicial - demanda  # apenas consome histórico
-            else:
+                estq_proj = estq_inicial - demanda
 
-                # meses 25+ → previsão → cálculo completo
+            else:
+                # ============================
+                # Meses 25+: previsão → cálculo completo com leadtime
+                # ============================
+
+                # Leadtime convertido em meses (ceil)
+                meses_voltar = int((leadtime_val + 29) // 30)
+
+                mes_liberacao_num = mes_num - meses_voltar
+                if mes_liberacao_num < 25:
+                    mes_liberacao_num = 25  # nunca liberar em meses históricos
+
                 necessidade_bruta = max(0, previsao - estq_inicial)
                 necessidade_liquida = max(0, necessidade_bruta - estq_seg)
                 ordem_planejada = necessidade_liquida if necessidade_liquida > 0 else 0
+
                 estq_proj = estq_inicial - previsao + ordem_planejada
 
-          
             estq_proj_anterior = estq_proj
 
-
-            custo_ordem = ordem_planejada * custo_unit
-
-            # Datas fictícias
-            data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (row["mes_num"] - 1))
+            # Datas fictícias (mantidas)
+            data_chegada = datetime(2024, 1, 1) + timedelta(days=30 * (mes_num - 1))
             data_liberacao = data_chegada - timedelta(days=int(leadtime_val))
 
             resultados.append({
                 "sku": sku,
-                "mes_num": row["mes_num"],
+                "mes_num": mes_num,
                 "demanda": demanda,
                 "previsao": previsao,
                 "estoque_inicial": estq_inicial,
@@ -199,11 +202,10 @@ def run(pasta_cliente):
                 "necessidade_bruta": necessidade_bruta,
                 "necessidade_liquida": necessidade_liquida,
                 "ordem_planejada": ordem_planejada,
-                "custo_ordem_planejada": custo_ordem,
+                "custo_ordem_planejada": ordem_planejada * custo_unit,
                 "data_liberacao": data_liberacao,
                 "data_chegada": data_chegada,
                 "leadtime_dias": leadtime_val
-
             })
 
     df_mrp = pd.DataFrame(resultados)
