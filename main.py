@@ -78,7 +78,7 @@ def enviar_email_resend(nome_cliente, email_destino, anexos):
         return
 
     html_body = f"""
-        <h2>Relatórios Gerados com Sucesso</h2>
+        <h2>Relatórios do módulo Previsão de Demanda, Análise de Estoques e MRP</h2>
         <p>Olá, {nome_cliente}!</p>
         <p>Os seus relatórios foram processados com sucesso.</p>
         <p>As planilhas resultantes do processamento estão anexadas a este e‑mail.</p>
