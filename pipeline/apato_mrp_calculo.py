@@ -183,7 +183,7 @@ def run(pasta_cliente):
 
                 necessidade_bruta = max(0, previsao)
                 necessidade_liquida = max(0, previsao + estq_seg - estq_inicial)
-                ordem_planejada = necessidade_liquida > 0 else 0
+                ordem_planejada = necessidade_liquida
 
                 estq_proj = estq_inicial - previsao + ordem_planejada
 
