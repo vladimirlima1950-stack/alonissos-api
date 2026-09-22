@@ -145,6 +145,15 @@ def run(pasta_cliente):
             previsao = row["previsao"] or 0
             estq_seg = row.get("estoque_seguranca", 0) or 0
 
+            if sku == "AR000011" and mes_num == 25:
+                print(
+                    "SKU:", sku,
+                    "MES:", mes_num,
+                    "PREV:", previsao,
+                    "ESTQ_INICIAL:", estq_inicial,
+                    "ESTQ_SEG:", estq_seg
+                )
+
             leadtime_val = row.get("leadtime_dias", 30)
             if pd.isna(leadtime_val):
                 leadtime_val = 30
