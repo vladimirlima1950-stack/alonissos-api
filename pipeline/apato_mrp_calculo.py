@@ -125,6 +125,15 @@ def run(pasta_cliente):
     base = df_dmd_fcst_long.merge(tb_estoque, on="sku", how="left")
     base = base.merge(tb_leadtime, on="sku", how="left")
     base = base.merge(df_seg_long, on=["sku", "mes_num"], how="left")
+
+    print(
+        base[
+            (base["sku"]=="AR000011") &
+            (base["mes_num"]>=25) &
+            (base["mes_num"]<=27)
+        ][["sku","mes_num","previsao","estoque_seguranca"]]
+    )
+
     base = base.merge(tb_custo, on="sku", how="left")
 
     base = base.sort_values(["sku", "mes_num"])
