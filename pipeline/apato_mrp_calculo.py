@@ -126,13 +126,7 @@ def run(pasta_cliente):
     base = base.merge(tb_leadtime, on="sku", how="left")
     base = base.merge(df_seg_long, on=["sku", "mes_num"], how="left")
 
-    print(
-        base[
-            (base["sku"]=="AR000011") &
-            (base["mes_num"]>=25) &
-            (base["mes_num"]<=27)
-        ][["sku","mes_num","previsao","estoque_seguranca"]]
-    )
+    
 
     base = base.merge(tb_custo, on="sku", how="left")
 
@@ -154,15 +148,7 @@ def run(pasta_cliente):
             previsao = row["previsao"] or 0
             estq_seg = row.get("estoque_seguranca", 0) or 0
 
-            if sku == "AR000011" and mes_num == 25:
-                print(
-                    "SKU:", sku,
-                    "MES:", mes_num,
-                    "PREV:", previsao,
-                    "ESTQ_INICIAL:", estq_inicial,
-                    "ESTQ_SEG:", estq_seg
-                )
-
+            
             leadtime_val = row.get("leadtime_dias", 30)
             if pd.isna(leadtime_val):
                 leadtime_val = 30
@@ -176,6 +162,9 @@ def run(pasta_cliente):
                 estq_inicial = estq_proj_anterior
 
             mes_num = row["mes_num"]
+
+            
+
 
             # ============================
             # Meses 1–24: histórico → sem ordens, sem consumo de estoque
