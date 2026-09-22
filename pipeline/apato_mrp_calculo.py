@@ -181,9 +181,9 @@ def run(pasta_cliente):
                 if mes_liberacao_num < 25:
                     mes_liberacao_num = 25  # nunca liberar em meses históricos
 
-                necessidade_bruta = max(0, previsao - estq_inicial)
-                necessidade_liquida = max(0, necessidade_bruta - estq_seg)
-                ordem_planejada = necessidade_liquida if necessidade_liquida > 0 else 0
+                necessidade_bruta = max(0, previsao)
+                necessidade_liquida = max(0, previsao + estq_seg - estq_inicial)
+                ordem_planejada = necessidade_liquida > 0 else 0
 
                 estq_proj = estq_inicial - previsao + ordem_planejada
 
