@@ -108,7 +108,7 @@ def run(pasta_cliente):
     for _, row in tb_estoq_seg.iterrows():
         sku = row["sku"]
         for i, col in enumerate(colunas_seg):
-            mes_num = i + 1
+            mes_num = i + 25
             seg = row[col]
             linhas_seg.append({
                 "sku": sku,
