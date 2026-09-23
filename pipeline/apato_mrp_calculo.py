@@ -201,6 +201,7 @@ def run(pasta_cliente):
                 "mes_num": mes_num,
                 "demanda": demanda,
                 "previsao": previsao,
+                "estoque_seguranca": estq_seg,
                 "estoque_inicial": estq_inicial,
                 "estoque_projetado": estq_proj,
                 "necessidade_bruta": necessidade_bruta,
