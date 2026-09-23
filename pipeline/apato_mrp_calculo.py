@@ -203,10 +203,10 @@ def run(pasta_cliente):
                 "previsao": previsao,
                 "estoque_seguranca": estq_seg,
                 "estoque_inicial": estq_inicial,
-                "estoque_projetado": estq_proj,
                 "necessidade_bruta": necessidade_bruta,
                 "necessidade_liquida": necessidade_liquida,
                 "ordem_planejada": ordem_planejada,
+                "estoque_projetado": estq_proj,
                 "custo_ordem_planejada": ordem_planejada * custo_unit,
                 "leadtime_dias": leadtime_val
             })
