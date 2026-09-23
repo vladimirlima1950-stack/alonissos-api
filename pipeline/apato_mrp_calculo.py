@@ -169,6 +169,7 @@ def run(pasta_cliente):
             # ============================
             # Meses 1–24: histórico → sem ordens, sem consumo de estoque
             # ============================
+            mes_liberacao_num = None
             if mes_num <= 24:
                 estq_seg = 0
                 ordem_planejada = 0
