@@ -169,11 +169,11 @@ def run(pasta_cliente):
             # ============================
             # Meses 1–24: histórico → sem ordens, sem consumo de estoque
             # ============================
-            mes_liberacao_num = None
+            mes_liberacao_num = ""
             if mes_num <= 24:
                 estq_seg = 0
                 ordem_planejada = 0
-                necessidade_bruta = 0
+                
                 necessidade_liquida = 0
 
                 # Estoque projetado não é consumido no histórico
@@ -184,20 +184,31 @@ def run(pasta_cliente):
                 # Meses 25+: previsão → cálculo completo com leadtime
                 # ============================
 
+                   
+                                
                 # Leadtime convertido em meses (ceil)
                 meses_voltar = int((leadtime_val + 29) // 30)
+                
                 mes_liberacao_num = mes_num - meses_voltar
+                
                 if mes_liberacao_num < 25:
-                    mes_liberacao_num = 25  # nunca liberar em meses históricos
-
-                necessidade_bruta = max(0, previsao)
-                necessidade_liquida = max(0, previsao + estq_seg - estq_inicial)
+                    mes_liberacao_num < 25
+                
+                necessidade_liquida = max(
+                    0,
+                    previsao + estq_seg - estq_inicial
+                )
+                
                 ordem_planejada = necessidade_liquida
-
+                
+                # só mostra mês de liberação quando há ordem
+                if ordem_planejada == 0:
+                    mes_liberacao_num = ""
+                
                 estq_proj = estq_inicial - previsao + ordem_planejada
-
+                 
             estq_proj_anterior = estq_proj
-
+            
             resultados.append({
                 "sku": sku,
                 "mes_num": mes_num,
@@ -205,7 +216,7 @@ def run(pasta_cliente):
                 "previsao": previsao,
                 "estoque_seguranca": estq_seg,
                 "estoque_inicial": estq_inicial,
-                # "necessidade_bruta": necessidade_bruta,
+                
                 "necessidade_liquida": necessidade_liquida,
                 "ordem_planejada": ordem_planejada,
                 "mes_liberacao": mes_liberacao_num,
