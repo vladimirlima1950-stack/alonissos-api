@@ -112,9 +112,9 @@ def enviar_email_resend(nome_cliente, email_destino, anexos):
 
 
 
-        <p>Atenciosamente,<br>MUPE Consultoria</p><br>
-        <p>Vladimir de Lima</p><br>
-        <p>WhatsApp 19 99783 5054</p>
+        <p>Atenciosamente,<br>MUPE Consultoria</p>
+        <p>Vladimir de Lima</p>
+        <p>WhatsApp 19 99783 5054</p><br>
     """
 
     lista_anexos = []
