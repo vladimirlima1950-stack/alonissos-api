@@ -2,7 +2,8 @@ import os
 import duckdb
 import pandas as pd
 from openpyxl import Workbook
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, numbers
+
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
@@ -108,6 +109,14 @@ def run(pasta_cliente):
 
             # Valor
             cell.value = float(valor) if isinstance(valor, (int, float)) else valor
+
+            # Formatação monetária
+            if campo in [col_custo, col_total\]:
+                cell.number_format = 'R$ #,##0.00'
+
+            # Percentual
+            if campo == col_porc:
+                cell.number_format = '0.00%'
 
     # ============================================================
     # Salva a planilha
