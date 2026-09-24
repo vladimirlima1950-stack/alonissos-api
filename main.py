@@ -80,9 +80,41 @@ def enviar_email_resend(nome_cliente, email_destino, anexos):
     html_body = f"""
         <h2>Relatórios do módulo Previsão de Demanda, Análise de Estoques e MRP</h2>
         <p>Olá, {nome_cliente}!</p>
-        <p>Os seus relatórios foram processados com sucesso.</p>
-        <p>As planilhas resultantes do processamento estão anexadas a este e‑mail.</p>
-        <p>Atenciosamente,<br>MUPE Consultoria</p>
+
+        <p>Os arquivos anexos apresentam uma visão integrada da demanda,
+        dos estoques e das necessidades futuras de reposição da empresa.
+        </p>
+
+        <p>As planilhas de análise permitem identificar os itens mais importantes
+        para o negócio, os níveis recomendados de estoque de segurança,
+        possíveis excessos de estoque, itens de baixo giro e o valor financeiro
+        atualmente investido em estoques.
+        </p>
+
+        <p>
+        A planilha de Simulação de Ressuprimento (MRP) projeta a evolução
+        dos estoques para os próximos meses considerando a demanda prevista,
+        o estoque atual, os estoques de segurança e o lead time dos itens.
+        Com base nessas informações são calculadas as necessidades futuras
+        de reposição e as quantidades recomendadas para compra.
+        </p>
+
+        <h3>Por onde começar?</h3>
+
+        <ol>
+        <li>Identifique os itens classificados como AA e verifique se existe estoque suficiente para atender à demanda prevista.</li>
+        <li>Compare os estoques atuais com os estoques de segurança recomendados para identificar riscos de ruptura.</li>
+        <li>Analise os itens com baixo giro e alto valor em estoque para identificar possíveis excessos de investimento.</li>
+        <li>Avalie os itens que apresentam necessidade de reposição nos próximos meses segundo a simulação MRP.</li>
+        <li>Priorize o planejamento de compra dos itens com maior lead time.</li>
+        <li>Utilize as ordens planejadas como apoio ao planejamento de compras e de caixa.</li>
+        </ol>
+
+
+
+        <p>Atenciosamente,<br>MUPE Consultoria</p><br>
+        <p>Vladimir de Lima</p><br>
+        <p>WhatsApp 19 99783 5054</p>
     """
 
     lista_anexos = []
