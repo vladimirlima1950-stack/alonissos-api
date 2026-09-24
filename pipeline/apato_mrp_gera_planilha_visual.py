@@ -45,6 +45,12 @@ def run(pasta_cliente):
     for _, row in df_mrp.iterrows():
         ws_mrp.append(list(row.values))
 
+    # Formatar custo_ordem_planejada com 2 casas decimais
+    col_custo_op = df_mrp.columns.get_loc("custo_ordem_planejada") + 1
+
+    for row in range(2, ws_mrp.max_row + 1):
+        ws_mrp.cell(row=row, column=col_custo_op).number_format = 'R$ #,##0.00'
+
     # ============================================================
     # 4) Aba: Base de Dados
     # ============================================================
