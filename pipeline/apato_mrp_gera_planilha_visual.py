@@ -6,6 +6,8 @@ import duckdb
 import pandas as pd
 from datetime import datetime
 from openpyxl import Workbook
+from openpyxl.styles import numbers
+
 
 def run(pasta_cliente):
 
@@ -80,6 +82,12 @@ def run(pasta_cliente):
     ws_sku.append(list(resumo_sku.columns))
     for _, row in resumo_sku.iterrows():
         ws_sku.append(list(row.values))
+
+    # Formatar custo_unitario com 2 casas decimais
+    col_custo = resumo_sku.columns.get_loc("custo_unitario") + 1
+
+    for row in range(2, ws_sku.max_row + 1):
+        ws_sku.cell(row=row, column=col_custo).number_format = 'R$ #,##0.00'
 
     # ============================================================
     # 6) Salvar planilha
