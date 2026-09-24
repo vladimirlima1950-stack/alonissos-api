@@ -111,7 +111,7 @@ def run(pasta_cliente):
             cell.value = float(valor) if isinstance(valor, (int, float)) else valor
 
             # Formatação monetária
-            if campo in [col_custo, col_total\]:
+            if campo in [col_custo, col_total]:
                 cell.number_format = 'R$ #,##0.00'
 
             # Percentual
