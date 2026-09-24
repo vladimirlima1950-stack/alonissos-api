@@ -102,8 +102,13 @@ def run(pasta_cliente):
             valor = row[campo]
 
             # Alinhamento
+            # Alinhamento
             if campo == col_sku:
-                cell.alignment = Alignment(horizontal="left")
+                cell.alignment = Alignment(horizontal="center")
+
+            elif campo in [col_qtde, col_custo, col_total, col_porc]:
+                cell.alignment = Alignment(horizontal="right")
+
             else:
                 cell.alignment = Alignment(horizontal="center")
 
