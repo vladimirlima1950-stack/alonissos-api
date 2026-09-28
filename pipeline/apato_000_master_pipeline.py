@@ -143,7 +143,7 @@ def processar_cliente(pasta_cliente):
         "apato_gera_plan_tb_demandas_previsoes",
         "apato_gera_plan_tb_estoques_segurança",
         "apato_gera_plan_tb_estoques_valores_fim",
-        "apato_gera_plan_tb_tempo_programas",
+        #"apato_gera_plan_tb_tempo_programas",
 
         # ============================================================
         # MÓDULOS DO MRP (NOVOS)
