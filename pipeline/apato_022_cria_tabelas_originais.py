@@ -80,7 +80,7 @@ def converte_data(valor):
 
 def ler_arquivo(caminho):
 
-    print(f"IMPORTANDO: {os.path.basename(caminho)}")
+    print("ARQUIVO:", caminho)
 
     if caminho.lower().endswith('.csv'):
         return pd.read_csv(
