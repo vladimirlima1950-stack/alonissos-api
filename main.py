@@ -55,8 +55,32 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
 
     os.makedirs(pasta_entrada, exist_ok=True)
 
-    caminho_arquivo = os.path.join(pasta_entrada, f"{campo}.csv")
 
+    # Remove versões anteriores do mesmo arquivo
+
+    for ext in [".csv", ".xlsx", ".xls"]:
+
+        arquivo_antigo = os.path.join(
+            pasta_entrada,
+            f"{campo}{ext}"
+        )
+
+        if os.path.exists(arquivo_antigo):
+            os.remove(arquivo_antigo)
+
+    # Descobre a extensão real do arquivo enviado
+    extensao = os.path.splitext(
+        arquivo.filename
+    )[1].lower()
+
+    # Salva mantendo a extensão original
+
+    caminho_arquivo = os.path.join(
+        pasta_entrada,
+        f"{campo}{extensao}"
+    )
+
+    
     with open(caminho_arquivo, "wb") as f:
         f.write(await arquivo.read())
 
