@@ -227,6 +227,16 @@ def run(pasta_cliente):
 
 
     df_status.columns = ['sku', 'situacao']
+    df_status['situacao'] = (
+        df_status['situacao']
+        .fillna('ATIVO')
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
+
+
+
     df_status['situacao'] = df_status['situacao'].fillna('ATIVO')
 
     conn.register('df_status', df_status)
