@@ -11,7 +11,12 @@ def encontrar_arquivo(pasta_entrada, palavra):
     palavra = palavra.lower()
     for nome in os.listdir(pasta_entrada):
         nome_lower = nome.lower()
-        if palavra in nome_lower and nome_lower.endswith(".csv"):
+        
+        if palavra in nome_lower and (
+            nome_lower.endswith(".csv")
+            or nome_lower.endswith(".xlsx")
+            or nome_lower.endswith(".xls")
+        ):
             return os.path.join(pasta_entrada, nome)
     raise FileNotFoundError(f"Nenhum arquivo contendo '{palavra}' encontrado em {pasta_entrada}")
 
@@ -20,23 +25,81 @@ def encontrar_arquivo(pasta_entrada, palavra):
 # Funções auxiliares
 # ============================================================
 
-def converte_numero(valor, padrao=1.00):
+def converte_numero(valor, padrao=0):
     try:
-        return float(str(valor).replace(',', '.'))
+
+        if pd.isna(valor):
+            return padrao
+
+        valor = str(valor).strip()
+
+        if valor == '':
+            return padrao
+
+        # Possui vírgula e ponto
+        if ',' in valor and '.' in valor:
+
+            # Formato americano
+            # Ex: 1,234.56
+            if valor.rfind('.') > valor.rfind(','):
+                valor = valor.replace(',', '')
+
+            # Formato brasileiro
+            # Ex: 1.234,56
+            else:
+                valor = valor.replace('.', '')
+                valor = valor.replace(',', '.')
+
+        # Somente vírgula
+        elif ',' in valor:
+            valor = valor.replace(',', '.')
+
+        return float(valor)
     except:
         return padrao
 
+
 def converte_data(valor):
     try:
-        valor = str(valor).strip()
-        if not valor or valor.lower() in ['nan', 'nat']:
+        if pd.isna(valor):
             return None
-        try:
-            return datetime.strptime(valor, '%d/%m/%Y').strftime('%Y-%m-%d')
-        except ValueError:
-            return datetime.strptime(valor, '%d/%m/%y').strftime('%Y-%m-%d')
-    except:
+
+        data = pd.to_datetime(
+            valor,
+            errors='coerce',
+            dayfirst=True
+        )
+
+        if pd.isna(data):
+            return None
+        return data.strftime('%Y-%m-%d')
+
+    except: 
         return None
+
+
+def ler_arquivo(caminho):
+    if caminho.lower().endswith('.csv'):
+        return pd.read_csv(
+            caminho,
+            sep=';',
+            encoding='latin1',
+            header=None,
+            dtype=str
+        )
+
+    elif caminho.lower().endswith(('.xlsx', '.xls')):
+        return pd.read_excel(
+            caminho,
+            header=None,
+            dtype=str
+        )
+    else:
+        raise ValueError(f"Formato não suportado: {caminho}")
+
+    
+
+    
 
 def preparar_tabela(conn, nome_tabela, ddl):
     conn.execute(f"DROP TABLE IF EXISTS {nome_tabela}")
@@ -70,7 +133,11 @@ def run(pasta_cliente):
 
     arquivo_custo = encontrar_arquivo(pasta_entrada, "custo")
 
-    df_custo = pd.read_csv(arquivo_custo, sep=';', encoding='latin1', header=None)
+    df_custo = ler_arquivo(arquivo_custo)
+    if str(df_custo.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+        df_custo = df_custo.iloc[1:]
+        
+
     df_custo.columns = ['sku', 'custo_unit']
 
     df_custo['custo_unit'] = df_custo['custo_unit'].apply(lambda x: converte_numero(x, 1.00))
@@ -96,7 +163,10 @@ def run(pasta_cliente):
 
     arquivo_estoque = encontrar_arquivo(pasta_entrada, "estoque")
 
-    df_estoque = pd.read_csv(arquivo_estoque, sep=';', encoding='latin1', header=None)
+    df_estoque = ler_arquivo(arquivo_estoque)
+    if str(df_estoque.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+        df_estoque = df_estoque.iloc[1:]
+
     df_estoque.columns = ['sku', 'qtde_orig']
 
     df_estoque['qtde_orig'] = df_estoque['qtde_orig'].apply(lambda x: converte_numero(x, 0))
@@ -121,7 +191,10 @@ def run(pasta_cliente):
 
     arquivo_lead = encontrar_arquivo(pasta_entrada, "leadtime")
 
-    df_lead = pd.read_csv(arquivo_lead, sep=';', encoding='latin1', header=None)
+    df_lead = ler_arquivo(arquivo_lead)
+    if str(df_lead.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+        df_lead = df_lead.iloc[1:]
+
     df_lead.columns = ['sku', 'leadtime']
 
     df_lead['leadtime'] = df_lead['leadtime'].apply(lambda x: converte_numero(x, 30))
@@ -148,7 +221,11 @@ def run(pasta_cliente):
 
     arquivo_status = encontrar_arquivo(pasta_entrada, "status")
 
-    df_status = pd.read_csv(arquivo_status, sep=';', encoding='latin1', header=None)
+    df_status = ler_arquivo(arquivo_status)
+    if str(df_status.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+        df_status = df_status.iloc[1:]
+
+
     df_status.columns = ['sku', 'situacao']
     df_status['situacao'] = df_status['situacao'].fillna('ATIVO')
 
@@ -171,7 +248,11 @@ def run(pasta_cliente):
 
     arquivo_vendas = encontrar_arquivo(pasta_entrada, "venda")
 
-    df_vendas = pd.read_csv(arquivo_vendas, sep=';', encoding='latin1', header=None)
+    df_vendas = ler_arquivo(arquivo_vendas)
+    if str(df_vendas.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+        df_vendas = df_vendas.iloc[1:]
+
+
     df_vendas.columns = ['sku', 'numero_ordem', 'data_desejada', 'qtde_desejada_orig']
 
     df_vendas['numero_ordem'] = df_vendas['numero_ordem'].fillna('AAAAAA')
