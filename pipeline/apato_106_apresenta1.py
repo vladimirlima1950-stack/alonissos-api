@@ -37,7 +37,8 @@ def run(pasta_cliente):
         INNER JOIN tb_custo_orig c ON e.sku = c.sku
         LEFT JOIN tb_class_pedidos2 cp ON e.sku = cp.sku
         LEFT JOIN tb_class_valores2 cv ON e.sku = cv.sku
-        CROSS JOIN total_val tv;
+        CROSS JOIN total_val tv
+        WHERE e.qtde_orig > 0;
     """)
 
     # -------------------------------------------------------------------------
