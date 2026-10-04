@@ -22,6 +22,7 @@ def run(pasta_cliente):
             SELECT SUM(e.qtde_orig * c.custo_unit) AS valtotal
             FROM tb_estoques_orig e
             INNER JOIN tb_custo_orig c ON e.sku = c.sku
+            WHERE e.qtde_orig > 0
         )
         SELECT 
             ROW_NUMBER() OVER () AS id_sku,
