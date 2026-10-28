@@ -40,9 +40,9 @@ def run(pasta_cliente):
                 t0.media_demanda,
                 t0.desvpad_demanda,
                 COALESCE(lt.leadtime, 30) AS lead_time_dias,
-                NULL AS desv_pad_corr,
-                NULL AS invnorm,
-                NULL AS estoq_segur,
+                CAST(NULL AS DOUBLE) AS desv_pad_corr,
+                CAST(NULL AS DOUBLE) AS invnorm,
+                CAST(NULL AS DOUBLE) AS estoq_segur,
                 cp.class_ABC_pedidos AS ABC_pedidos,
                 cv.class_ABC_valores AS ABC_valores,
                 c.custo_unit
@@ -60,7 +60,9 @@ def run(pasta_cliente):
         # ============================================================
         con.execute("""
             UPDATE tb_nonsazon13_notrend_SS1
-            SET desv_pad_corr = desvpad_demanda * POW(lead_time_dias / 30.0, 0.5);
+            SET desv_pad_corr = 
+            COALESCE(desvpad_demanda,0)
+            * POW(COALESCE(lead_time_dias,30)/30.0,0.5);
         """)
 
         # ============================================================
