@@ -339,16 +339,20 @@ def run(pasta_cliente):
     # ------------------------------------------------------------
     # Gravar tabela final
     # ------------------------------------------------------------
-
-    conn.execute("DELETE FROM tb_sku_status")
-
+    
+    
     conn.register("df_status", df_status)
-
+    
+    conn.execute("DROP TABLE IF EXISTS tb_sku_status")
+    
     conn.execute("""
-        INSERT INTO tb_sku_status
+        CREATE TABLE tb_sku_status AS
         SELECT *
         FROM df_status
     """)
+    
+    
+    
 
     
         
