@@ -230,6 +230,7 @@ def run(pasta_cliente):
 
 
     df_status.columns = ['sku', 'situacao']
+
     df_status['situacao'] = (
         df_status['situacao']
         .fillna('ATIVO')
@@ -238,14 +239,87 @@ def run(pasta_cliente):
         .str.upper()
     )
 
+# ============================================================
+# Verificar duplicidades de SKU no arquivo de status
+# ============================================================
 
+# Quantidade de situações diferentes por SKU
+verifica_status = (
+    df_status
+    .groupby('sku')['situacao']
+    .nunique()
+    .reset_index(name='qtd_status')
+)
 
-    df_status['situacao'] = df_status['situacao'].fillna('ATIVO')
+# SKUs que possuem mais de uma situação
+conflitos = verifica_status[
+    verifica_status['qtd_status'] > 1
+]
 
-    conn.register('df_status', df_status)
-    conn.execute("DROP TABLE IF EXISTS tb_sku_status")
-    conn.execute("CREATE TABLE tb_sku_status AS SELECT * FROM df_status")
+if not conflitos.empty:
 
+    print("\n" + "=" * 60)
+    print("ERRO NO ARQUIVO STATUS")
+    print("=" * 60)
+    print("Os SKUs abaixo possuem situações conflitantes:")
+    print("")
+
+    detalhes = (
+        df_status
+        .groupby('sku')['situacao']
+        .unique()
+        .reset_index()
+    )
+
+    detalhes = detalhes[
+        detalhes['sku'].isin(conflitos['sku'])
+    ]
+
+    for _, row in detalhes.iterrows():
+        print(
+            f"{row['sku']} -> "
+            f"{', '.join(sorted(row['situacao']))}"
+        )
+
+    print("")
+    print(
+        "Corrija o arquivo de STATUS antes de "
+        "executar novamente."
+    )
+    print("=" * 60)
+
+    raise Exception(
+        f"Arquivo STATUS possui "
+        f"{len(conflitos)} SKU(s) com "
+        f"situações conflitantes."
+    )
+
+# ============================================================
+# Eliminar duplicidades válidas
+# Exemplo:
+# SKU1 ATIVO
+# SKU1 ATIVO
+# ============================================================
+
+df_status = df_status.drop_duplicates(
+    subset=['sku', 'situacao']
+)
+
+conn.register('df_status', df_status)
+
+conn.execute("DROP TABLE IF EXISTS tb_sku_status")
+
+conn.execute("""
+    CREATE TABLE tb_sku_status AS
+    SELECT *
+    FROM df_status
+""")
+
+    
+    
+    
+    
+    
     # ============================================================
     # 5. tb_vendas_orig  (palavra‑chave: "venda")
     # ============================================================
