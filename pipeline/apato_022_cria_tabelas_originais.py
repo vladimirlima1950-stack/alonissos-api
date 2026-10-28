@@ -211,6 +211,9 @@ def run(pasta_cliente):
     conn.execute("DROP TABLE IF EXISTS tb_leadtime")
     conn.execute("CREATE TABLE tb_leadtime AS SELECT sku, leadtime FROM tb_leadtime_orig")
 
+   
+
+
     # ============================================================
     # 4. tb_sku_status_orig  (palavra‑chave: "status")
     # ============================================================
@@ -225,11 +228,32 @@ def run(pasta_cliente):
     arquivo_status = encontrar_arquivo(pasta_entrada, "status")
 
     df_status = ler_arquivo(arquivo_status)
-    if str(df_status.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+
+    if str(df_status.iloc[0,0]).strip().upper() in [
+        'SKU', 'CODIGO', 'CÓDIGO', 'ITEM'
+    ]:
         df_status = df_status.iloc[1:]
 
+    # ------------------------------------------------------------
+    # Padronização dos dados
+    # ------------------------------------------------------------
 
     df_status.columns = ['sku', 'situacao']
+
+    df_status['sku'] = (
+        df_status['sku']
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
+
+    # remover linhas vazias
+    df_status = df_status.dropna(subset=['sku'])
+
+    df_status = df_status[
+        (df_status['sku'] != '') &
+        (df_status['sku'] != 'NAN')
+    ]
 
     df_status['situacao'] = (
         df_status['situacao']
@@ -239,11 +263,18 @@ def run(pasta_cliente):
         .str.upper()
     )
 
-    # ============================================================
-    # Verificar duplicidades de SKU no arquivo de status
-    # ============================================================
+    # ------------------------------------------------------------
+    # Verificar conflitos de status
+    #
+    # PERMITIDO:
+    # SKU001  ATIVO
+    # SKU001  ATIVO
+    #
+    # NÃO PERMITIDO:
+    # SKU001  ATIVO
+    # SKU001  INATIVO
+    # ------------------------------------------------------------
 
-    # Quantidade de situações diferentes por SKU
     verifica_status = (
         df_status
         .groupby('sku')['situacao']
@@ -251,7 +282,6 @@ def run(pasta_cliente):
         .reset_index(name='qtd_status')
     )
 
-    # SKUs que possuem mais de uma situação
     conflitos = verifica_status[
         verifica_status['qtd_status'] > 1
     ]
@@ -264,58 +294,63 @@ def run(pasta_cliente):
         print("Os SKUs abaixo possuem situações conflitantes:")
         print("")
 
-    detalhes = (
-        df_status
-        .groupby('sku')['situacao']
-        .unique()
-        .reset_index()
-    )
-
-    detalhes = detalhes[
-        detalhes['sku'].isin(conflitos['sku'])
-    ]
-
-    for _, row in detalhes.iterrows():
-        print(
-            f"{row['sku']} -> "
-            f"{', '.join(sorted(row['situacao']))}"
+        detalhes = (
+            df_status
+            .groupby('sku')['situacao']
+            .unique()
+            .reset_index()
         )
 
-    print("")
-    print(
-        "Corrija o arquivo de STATUS antes de "
-        "executar novamente."
-    )
-    print("=" * 60)
+        detalhes = detalhes[
+            detalhes['sku'].isin(conflitos['sku'])
+        ]
 
-    raise Exception(
-        f"Arquivo STATUS possui "
-        f"{len(conflitos)} SKU(s) com "
-        f"situações conflitantes."
-    )
+        for _, row in detalhes.iterrows():
 
-    # ============================================================
+            situacoes = ", ".join(
+                sorted(list(row['situacao']))
+            )
+
+            print(
+                f"{row['sku']} -> {situacoes}"
+            )
+
+        print("")
+        print(
+            "Corrija o arquivo STATUS e execute "
+            "o processamento novamente."
+        )
+        print("=" * 60)
+
+        raise Exception(
+            f"Arquivo STATUS possui "
+            f"{len(conflitos)} SKU(s) com "
+            f"situações conflitantes."
+        )
+
+    # ------------------------------------------------------------
     # Eliminar duplicidades válidas
-    # Exemplo:
-    # SKU1 ATIVO
-    # SKU1 ATIVO
-    # ============================================================
+    # ------------------------------------------------------------
 
     df_status = df_status.drop_duplicates(
         subset=['sku', 'situacao']
     )
 
-    conn.register('df_status', df_status)
+    # ------------------------------------------------------------
+    # Gravar tabela final
+    # ------------------------------------------------------------
 
-    conn.execute("DROP TABLE IF EXISTS tb_sku_status")
+    conn.execute("DELETE FROM tb_sku_status_orig")
+
+    conn.register("df_status", df_status)
 
     conn.execute("""
-        CREATE TABLE tb_sku_status AS
+        INSERT INTO tb_sku_status_orig
         SELECT *
         FROM df_status
     """)
 
-        
+    
         
         
     
