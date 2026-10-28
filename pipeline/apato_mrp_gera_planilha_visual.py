@@ -5,7 +5,7 @@ import os
 import duckdb
 import pandas as pd
 from datetime import datetime
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import numbers
 
 
@@ -31,8 +31,17 @@ def run(pasta_cliente):
     # ============================================================
     # 2) Criar workbook
     # ============================================================
+    
+    caminho_template = os.path.join(
+    os.path.dirname(__file__),
+    "templates",
+    "Graficos auxiliares.xlsx"
+    )
 
-    wb = Workbook()
+    wb = load_workbook(caminho_template)
+    
+
+    
 
     # ============================================================
     # 3) Aba: MRP Completo
@@ -40,6 +49,7 @@ def run(pasta_cliente):
 
     ws_mrp = wb.active
     ws_mrp.title = "MRP Completo"
+    ws_mrp = wb.create_sheet("MRP Completo")
 
     ws_mrp.append(list(df_mrp.columns))
     for _, row in df_mrp.iterrows():
