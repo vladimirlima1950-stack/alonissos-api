@@ -20,10 +20,16 @@ def run(pasta_cliente):
             SELECT
                 sku,
                 AVG(qtde_pedida_dessas) AS media_demanda_dessas,
-                STDDEV_POP(qtde_pedida_dessas) AS stddev_demanda_dessas,
+                
+                coalesce(STDDEV_POP(qtde_pedida_dessas), 0
+                ) AS stddev_demanda_dessas,
                 CASE
                     WHEN AVG(qtde_pedida_dessas) > 0
-                    THEN STDDEV_POP(qtde_pedida_dessas) / AVG(qtde_pedida_dessas)
+                    THEN 
+                        coalesce(
+                            STDDEV_POP(qtde_pedida_dessas),
+                            0
+                        )  / AVG(qtde_pedida_dessas)
                     ELSE 0
                 END AS cv_demanda
             FROM tb_sazon12_trend_fase3
@@ -88,7 +94,9 @@ def run(pasta_cliente):
             ALTER TABLE tb_sazon12_trend_SS1 ADD COLUMN desv_pad_corr DECIMAL(20,2);
 
             UPDATE tb_sazon12_trend_SS1
-            SET desv_pad_corr = desvpad_demanda_dessas * POW((lead_time_dias::DOUBLE / 30.0), 0.5);
+            SET desv_pad_corr = 
+                coalesce(desvpad_demanda_dessas, 0) * 
+                POW((lead_time_dias::DOUBLE / 30.0), 0.5);
         """)
 
         # ============================================================
@@ -173,7 +181,10 @@ def run(pasta_cliente):
         # ============================================================
         con.execute("""
             UPDATE tb_sazon12_trend_SS1
-            SET desv_pad_futuro = cv_demanda * media_prev_12 * POW((lead_time_dias::DOUBLE / 30.0), 0.5)
+            SET desv_pad_futuro = 
+                coalesce(cv_demanda, 0)
+                * coalesce(media_prev_12, 0)
+                * POW((lead_time_dias::DOUBLE / 30.0), 0.5)
             WHERE usar_futuro = TRUE;
         """)
 
@@ -183,7 +194,8 @@ def run(pasta_cliente):
         con.execute("""
             UPDATE tb_sazon12_trend_SS1
             SET invnorm = (
-                desv_pad_corr *
+                coalesce(desv_pad_corr, 0)
+                *
                 CASE
                     WHEN ABC_pedidos = 'A' AND custo_unit < 10 THEN 2.33
                     WHEN ABC_pedidos = 'B' AND custo_unit < 10 THEN 2.06
@@ -203,13 +215,15 @@ def run(pasta_cliente):
                     WHEN ABC_pedidos = 'A' AND custo_unit >= 100000 THEN 0.99
                     WHEN ABC_pedidos = 'B' AND custo_unit >= 100000 THEN 0.96
                     WHEN ABC_pedidos = 'C' AND custo_unit >= 100000 THEN 0.92
+                    else 0
                 END
-            ) + media_demanda_dessas
+            ) + coalesce(media_demanda_dessas, 0)
             WHERE usar_futuro = FALSE;
 
             UPDATE tb_sazon12_trend_SS1
             SET invnorm = (
-                desv_pad_futuro *
+                coalesce(desv_pad_futuro, 0)
+                *
                 CASE
                     WHEN ABC_pedidos = 'A' AND custo_unit < 10 THEN 2.33
                     WHEN ABC_pedidos = 'B' AND custo_unit < 10 THEN 2.06
@@ -229,8 +243,9 @@ def run(pasta_cliente):
                     WHEN ABC_pedidos = 'A' AND custo_unit >= 100000 THEN 0.99
                     WHEN ABC_pedidos = 'B' AND custo_unit >= 100000 THEN 0.96
                     WHEN ABC_pedidos = 'C' AND custo_unit >= 100000 THEN 0.92
+                    else 0
                 END
-            ) + media_prev_12
+            ) + coalesce(media_prev_12, 0)
             WHERE usar_futuro = TRUE;
         """)
 
@@ -239,15 +254,29 @@ def run(pasta_cliente):
         # ============================================================
         con.execute("""
             UPDATE tb_sazon12_trend_SS1
-            SET estoq_segur_is = (invnorm - media_demanda_dessas) * indice_sazon
+            SET estoq_segur_is = 
+            (
+                coalesce(invnorm, 0)
+                - coalesce(media_demanda_dessas, 0)
+            )
+            * coalesce(indice_sazon, 0)
             WHERE usar_futuro = FALSE;
 
             UPDATE tb_sazon12_trend_SS1
-            SET estoq_segur_is = (invnorm - media_prev_12) * indice_sazon
+            SET estoq_segur_is =
+            (
+                coalesce(invnorm, 0)
+                - coalesce(media_prev_12, 0)
+            )
+            * coalesce(indice_sazon, 0)
             WHERE usar_futuro = TRUE;
 
             UPDATE tb_sazon12_trend_SS1
-            SET estoq_segur_is = LEAST(estoq_segur_is, media_prev_12 * 1.5);
+            SET estoq_segur_is = 
+                LEAST(
+                    coalesce(estoq_segur_is, 0),
+                    coalesce(media_prev_12, 0) * 1.5
+                );
         """)
 
         # ============================================================

@@ -20,7 +20,10 @@ def run(pasta_cliente):
         SELECT
             sku,
             AVG(qtde_pedida) AS media_demanda,
-            STDDEV_POP(qtde_pedida) AS desvpad_demanda
+            coalesce(
+                STDDEV_POP(qtde_pedida), 
+                0
+            )    AS desvpad_demanda
         FROM tb_a_nonsazon12_trend_fase3
         GROUP BY sku;
     """)
@@ -60,7 +63,8 @@ def run(pasta_cliente):
     con.execute("""
         UPDATE tb_nonsazon15_trend_SS1
         SET lead_time_dias = 30
-        WHERE lead_time_dias IS NULL;
+        WHERE lead_time_dias IS NULL
+            or lead_time_dias <= 0;
     """)
 
     # ============================================================
@@ -79,7 +83,9 @@ def run(pasta_cliente):
     # ============================================================
     con.execute("""
         UPDATE tb_nonsazon15_trend_SS1
-        SET desv_pad_corr = desvpad_demanda * POW((lead_time_dias::DOUBLE / 30.0), 0.5);
+        SET desv_pad_corr = 
+            coalesce(desvpad_demanda, 0)
+            * POW((lead_time_dias::DOUBLE / 30.0), 0.5);
     """)
 
     # ============================================================
@@ -110,6 +116,10 @@ def run(pasta_cliente):
         SET custo_unit = c.custo_unit
         FROM tb_custos AS c
         WHERE tb_nonsazon15_trend_SS1.sku = c.sku;
+        
+        UPDATE tb_nonsazon15_trend_SS1
+        SET custo_unit = 0
+        WHERE custo_unit IS NULL;
     """)
 
     # ============================================================
@@ -117,76 +127,36 @@ def run(pasta_cliente):
     # ============================================================
     con.execute("""
         UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (2.33 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'A' AND custo_unit < 10;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (2.06 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'B' AND custo_unit < 10;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.89 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'C' AND custo_unit < 10;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.75 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'A' AND custo_unit >= 10 AND custo_unit < 100;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.65 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'B' AND custo_unit >= 10 AND custo_unit < 100;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.56 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'C' AND custo_unit >= 10 AND custo_unit < 100;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.48 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'A' AND custo_unit >= 100 AND custo_unit < 1000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.41 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'B' AND custo_unit >= 100 AND custo_unit < 1000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.34 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'C' AND custo_unit >= 100 AND custo_unit < 1000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.29 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'A' AND custo_unit >= 1000 AND custo_unit < 10000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.23 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'B' AND custo_unit >= 1000 AND custo_unit < 10000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.18 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'C' AND custo_unit >= 1000 AND custo_unit < 10000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.13 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'A' AND custo_unit >= 10000 AND custo_unit < 100000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.08 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'B' AND custo_unit >= 10000 AND custo_unit < 100000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (1.04 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'C' AND custo_unit >= 10000 AND custo_unit < 100000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (0.99 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'A' AND custo_unit >= 100000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (0.96 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'B' AND custo_unit >= 100000;
-
-        UPDATE tb_nonsazon15_trend_SS1
-        SET invnorm = (0.92 * desv_pad_corr) + media_demanda
-        WHERE ABC_pedidos = 'C' AND custo_unit >= 100000;
+        SET invnorm = 
+        (
+            coalesce(desv_pad_corr, 0)
+            *
+            CASE
+                WHEN ABC_pedidos = 'A' AND custo_unit < 10 THEN 2.33
+                WHEN ABC_pedidos = 'B' AND custo_unit < 10 THEN 2.06
+                WHEN ABC_pedidos = 'C' AND custo_unit < 10 THEN 1.89
+                WHEN ABC_pedidos = 'A' AND custo_unit >= 10 AND custo_unit < 100 THEN 1.75
+                WHEN ABC_pedidos = 'B' AND custo_unit >= 10 AND custo_unit < 100 THEN 1.65
+                WHEN ABC_pedidos = 'C' AND custo_unit >= 10 AND custo_unit < 100 THEN 1.56
+                WHEN ABC_pedidos = 'A' AND custo_unit >= 100 AND custo_unit < 1000 THEN 1.48
+                WHEN ABC_pedidos = 'B' AND custo_unit >= 100 AND custo_unit < 1000 THEN 1.41
+                WHEN ABC_pedidos = 'C' AND custo_unit >= 100 AND custo_unit < 1000 THEN 1.34
+                WHEN ABC_pedidos = 'A' AND custo_unit >= 1000 AND custo_unit < 10000 THEN 1.29
+                WHEN ABC_pedidos = 'B' AND custo_unit >= 1000 AND custo_unit < 10000 THEN 1.23
+                WHEN ABC_pedidos = 'C' AND custo_unit >= 1000 AND custo_unit < 10000 THEN 1.18
+                WHEN ABC_pedidos = 'A' AND custo_unit >= 10000 AND custo_unit < 100000 THEN 1.13
+                WHEN ABC_pedidos = 'B' AND custo_unit >= 10000 AND custo_unit < 100000 THEN 1.08
+                WHEN ABC_pedidos = 'C' AND custo_unit >= 10000 AND custo_unit < 100000 THEN 1.04
+                WHEN ABC_pedidos = 'A' AND custo_unit >= 100000 THEN 0.99
+                WHEN ABC_pedidos = 'B' AND custo_unit >= 100000 THEN 0.96
+                WHEN ABC_pedidos = 'C' AND custo_unit >= 100000 THEN 0.92
+                
+                ELSE 0
+            END
+        )
+        + coalesce(media_demanda, 0);
+                
+                
     """)
 
     # ============================================================
@@ -194,7 +164,14 @@ def run(pasta_cliente):
     # ============================================================
     con.execute("""
         UPDATE tb_nonsazon15_trend_SS1
-        SET estoq_segur = (invnorm - media_demanda);
+        SET estoq_segur = 
+        (
+            coalesce(invnorm, 0)
+            - coalesce(media_demanda, 0)
+        );
+        UPDATE tb_nonsazon15_trend_SS1
+        SET estoq_segur = 0
+        WHERE estoq_segur < 0;
     """)
 
     # ============================================================
@@ -203,7 +180,7 @@ def run(pasta_cliente):
     con.execute("""
         UPDATE tb_nonsazon15_trend_SS1
         SET previsoes = 0
-        WHERE previsoes < 0;
+        WHERE previsoes <= 0;
 
         UPDATE tb_nonsazon15_trend_SS1
         SET estoq_segur = 0
