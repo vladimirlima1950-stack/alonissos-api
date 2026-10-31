@@ -176,15 +176,24 @@ def processar_cliente(pasta_cliente):
             evento = f"ERRO: {e}"
             log(f"ERRO ao executar {programa}: {evento}")
             log("Pipeline interrompido para este cliente.")
-
+            
             fim = datetime.now()
             con = duckdb.connect(caminho_banco, read_only=False)
+            
             con.execute(
                 "INSERT INTO tb_tempo_programa VALUES (?, ?, ?, ?)",
-                [programa, inicio, fim, evento],
+                [programa, inicio, fim, evento]
             )
+            
+            
+            
+            
+            
+          
+
+           
             con.close()
-            break
+            raise
 
         fim = datetime.now()
 

@@ -275,17 +275,27 @@ def run(pasta_cliente):
     # SKU001  INATIVO
     # ------------------------------------------------------------
 
-    verifica_status = (
+    # ------------------------------------------------------------
+    # Verificar conflitos de status 
+    # ------------------------------------------------------------
+
+
+    detalhes = (
         df_status
         .groupby('sku')['situacao']
-        .nunique()
-        .reset_index(name='qtd_status')
+        .unique()
+        .reset_index()
     )
-
-    conflitos = verifica_status[
-        verifica_status['qtd_status'] > 1
+    
+    conflitos = detalhes[
+        detalhes['situacao'].apply(
+            lambda x: ('ATIVO' in x) and ('INATIVO' in x)
+        )
     ]
-
+    
+    
+    
+    
     if not conflitos.empty:
 
         print("\n" + "=" * 60)
@@ -294,18 +304,10 @@ def run(pasta_cliente):
         print("Os SKUs abaixo possuem situações conflitantes:")
         print("")
 
-        detalhes = (
-            df_status
-            .groupby('sku')['situacao']
-            .unique()
-            .reset_index()
-        )
+       
+                
 
-        detalhes = detalhes[
-            detalhes['sku'].isin(conflitos['sku'])
-        ]
-
-        for _, row in detalhes.iterrows():
+        for _, row in conflitos.iterrows():
 
             situacoes = ", ".join(
                 sorted(list(row['situacao']))
@@ -315,18 +317,31 @@ def run(pasta_cliente):
                 f"{row['sku']} -> {situacoes}"
             )
 
-        print("")
-        print(
-            "Corrija o arquivo STATUS e execute "
-            "o processamento novamente."
-        )
-        print("=" * 60)
+        mensagem_conflito = []
 
+        
+        for _, row in conflitos.iterrows():
+
+            situacoes = ", ".join(
+                sorted(list(row['situacao']))
+            )
+
+            mensagem_conflito.append(
+                f"SKU {row['sku']} possui as situações: {situacoes}"
+            )        
+         
+         
+         
+        conn.close()
+         
         raise Exception(
-            f"Arquivo STATUS possui "
-            f"{len(conflitos)} SKU(s) com "
-            f"situações conflitantes."
+            "CONFLITO_STATUS_SKU\n" +
+            "\n".join(mensagem_conflito)
         )
+    
+        
+        
+        
 
     # ------------------------------------------------------------
     # Eliminar duplicidades válidas
