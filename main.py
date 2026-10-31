@@ -91,6 +91,69 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
 
 
 # ============================================================
+# FUNÇÃO DE ENVIO DE E‑MAIL DE ERRO (RESEND API)
+# ============================================================
+def enviar_email_erro(nome_cliente,
+
+                      email_destino,
+                      mensagem_erro):
+
+    api_key = os.getenv("RESEND_API_KEY")
+
+    if not api_key:
+        print("ERRO: RESEND_API_KEY não encontrada.")
+        return
+
+    html_body = f"""
+    <h2>Processamento interrompido</h2>
+
+    <p>Olá, {nome_cliente}.</p>
+
+    <p>
+    Foi encontrado um problema nos arquivos enviados.
+    </p>
+
+    <pre>
+{mensagem_erro}
+    </pre>
+
+    <p>
+    Corrija os dados e realize um novo envio.
+    </p>
+
+    <p>MUPE Consultoria</p>
+    """
+
+    payload = {
+        "from": "MUPE Consultoria <vladimir.lima@mupeconsult.com>",
+        "to": [email_destino],
+        "subject": "Erro no processamento dos arquivos",
+        "html": html_body
+    }
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+
+        r = requests.post(
+            "https://api.resend.com/emails",
+            json=payload,
+            headers=headers
+            
+        )
+
+        print("RESEND ERRO - Status:", r.status_code)
+        print("RESEND ERRO - Resposta:", r.text)
+
+    except Exception as e:
+        print("ERRO ao enviar email de erro:", e)
+
+
+
+# ============================================================
 # FUNÇÃO DE ENVIO DE E‑MAIL (RESEND API)
 # ============================================================
 
@@ -167,7 +230,12 @@ def enviar_email_resend(nome_cliente, email_destino, anexos):
     }
 
     try:
-        r = requests.post("https://api.resend.com/emails", json=payload, headers=headers)
+        r = requests.post(
+            "https://api.resend.com/emails",
+            json=payload,
+            headers=headers
+        )    
+        
         print("RESEND — Status:", r.status_code)
         print("RESEND — Resposta:", r.text)
     except Exception as e:
@@ -215,7 +283,8 @@ def processar(request: Request, cliente: str):
         f"""
 import os
 from pipeline.apato_000_master_pipeline import processar_cliente
-from main import enviar_email_resend
+from main import enviar_email_resend, enviar_email_erro
+
 
 cliente = '{cliente}'          # ← ID correto
 email_cliente = '{email_cliente}'
@@ -223,14 +292,31 @@ nome_cliente = '{nome_cliente}'  # ← nome correto
 
 pasta_cliente = '/app/clientes/' + cliente
 
-processar_cliente(pasta_cliente)
+try:
 
-import glob
+    processar_cliente(pasta_cliente)
 
-pasta_saida = f"/app/clientes/{cliente}/saida"
-anexos = glob.glob(f"{pasta_saida}/*")
+    import glob
 
-enviar_email_resend(nome_cliente, email_cliente, anexos)
+    pasta_saida = f"/app/clientes/{cliente}/saida"
+    anexos = glob.glob(f"{pasta_saida}/*")
+
+    enviar_email_resend(
+        nome_cliente,
+        email_cliente,
+        anexos
+    )
+
+except Exception as e:
+
+    enviar_email_erro(
+        nome_cliente,
+        email_cliente,
+        str(e)
+    )
+
+
+
 print("PROCESSAMENTO + EMAIL FINALIZADOS")
         """
     ])
