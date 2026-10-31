@@ -335,7 +335,7 @@ def run(pasta_cliente):
         conn.close()
          
         raise Exception(
-            "CONFLITO_STATUS_SKU\n" +
+            "Foram encontrados SKUs com situação conflitante:\n\n" +
             "\n".join(mensagem_conflito)
         )
     
