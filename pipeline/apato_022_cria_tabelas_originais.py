@@ -172,9 +172,9 @@ def run(pasta_cliente):
     
     
     arquivo_idioma = os.path.join(
-    pasta_cliente,
-    "idioma.txt"
-)
+        pasta_cliente,
+        "idioma.txt"
+    )
 
 if os.path.exists(arquivo_idioma):
 
@@ -190,12 +190,12 @@ if os.path.exists(arquivo_idioma):
             .upper()
         )
 
-else:
+    else:
 
-    idioma_cliente = "PT"
+        idioma_cliente = "PT"
 
 
-print("IDIOMA DO CLIENTE:", idioma_cliente)
+    print("IDIOMA DO CLIENTE:", idioma_cliente)
     
     
 
