@@ -86,6 +86,7 @@ def converte_data(valor, idioma='PT'):
                 errors='coerce'
             )
 
+        
         elif idioma == 'EN':
 
             data = pd.to_datetime(
@@ -93,6 +94,13 @@ def converte_data(valor, idioma='PT'):
                 format='%m/%d/%Y',
                 errors='coerce'
             )
+
+            if pd.isna(data):
+                data = pd.to_datetime(
+                    valor,
+                    format='%m/%d/%y',
+                    errors='coerce'
+                )
 
         else:
 
@@ -102,6 +110,16 @@ def converte_data(valor, idioma='PT'):
                 errors='coerce'
             )
 
+            if pd.isna(data):
+                data = pd.to_datetime(
+                    valor,
+                    format='%d/%m/%y',
+                    errors='coerce'
+                )
+                
+        
+        
+        
         if pd.isna(data):
             return None
 

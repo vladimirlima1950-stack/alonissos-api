@@ -251,6 +251,11 @@ def processar(request: Request, cliente: str):
 
     email_cliente = request.query_params.get("email")
     nome_cliente = request.query_params.get("nome")
+    
+    idioma_cliente = request.query_params.get(
+        "idioma",
+        "PT"
+    )
 
     if not email_cliente:
         return {
