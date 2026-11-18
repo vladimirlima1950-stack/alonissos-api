@@ -439,20 +439,20 @@ df_vendas['data_desejada'] = (
     .apply(converte_data)
 )
 
-print("\n================================")
-print("DATAS APOS A CONVERSAO")
-print("================================")
-print(df_vendas['data_desejada'].head(20))
+    print("\n================================")
+    print("DATAS APOS A CONVERSAO")
+    print("================================")
+    print(df_vendas['data_desejada'].head(20))
 
-print("\n================================")
-print("QTDE DATAS NULAS")
-print("================================")
-print(df_vendas['data_desejada'].isna().sum())
+    print("\n================================")
+    print("QTDE DATAS NULAS")
+    print("================================")
+    print(df_vendas['data_desejada'].isna().sum())
 
-print("\n================================")
-print("TOTAL DE REGISTROS")
-print("================================")
-print(len(df_vendas))
+    print("\n================================")
+    print("TOTAL DE REGISTROS")
+    print("================================")
+    print(len(df_vendas))
 
         
     
