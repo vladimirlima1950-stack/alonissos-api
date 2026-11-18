@@ -220,6 +220,14 @@ def run(pasta_cliente):
     arquivo_custo = encontrar_arquivo(pasta_entrada, "custo")
 
     df_custo = ler_arquivo(arquivo_custo)
+    
+    
+    print("\n===== AMOSTRA ARQUIVO CUSTOS =====")
+    print(df_custo.head(20))
+    print("=================================\n")
+    
+    
+    
     if str(df_custo.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
         df_custo = df_custo.iloc[1:]
         
@@ -227,6 +235,12 @@ def run(pasta_cliente):
     df_custo.columns = ['sku', 'custo_unit']
 
     df_custo['custo_unit'] = df_custo['custo_unit'].apply(lambda x: converte_numero(x, 1.00))
+    
+    print("\n===== CUSTOS APÓS CONVERSÃO =====")
+    print(df_custo.head(20))
+    print("================================\n")
+    
+    
     df_custo.loc[df_custo['custo_unit'] < 0, 'custo_unit'] = 1
 
     df_custo = df_custo.groupby('sku', as_index=False)['custo_unit'].max()
@@ -473,6 +487,11 @@ def run(pasta_cliente):
     arquivo_vendas = encontrar_arquivo(pasta_entrada, "venda")
 
     df_vendas = ler_arquivo(arquivo_vendas)
+    
+    print("\n===== VENDAS BRUTAS =====")
+    print(df_vendas.head(20))
+    print("=========================\n")
+    
     if str(df_vendas.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
         df_vendas = df_vendas.iloc[1:]
 
