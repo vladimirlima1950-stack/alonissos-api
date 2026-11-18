@@ -256,6 +256,15 @@ def processar(request: Request, cliente: str):
         "idioma",
         "PT"
     )
+    
+    print("CLIENTE:", cliente)
+    print("NOME:", nome_cliente)
+    print("EMAIL:", email_cliente)
+    print("IDIOMA:", idioma_cliente)
+
+    
+    
+    
 
     if not email_cliente:
         return {
