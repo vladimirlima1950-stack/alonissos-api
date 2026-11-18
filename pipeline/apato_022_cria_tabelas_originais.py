@@ -69,16 +69,24 @@ def converte_data(valor, idioma='PT'):
         if pd.isna(valor):
             return None
 
-        # Se o Excel já entregou um datetime
-        if isinstance(valor, datetime):
-            return valor.strftime('%Y-%m-%d')
-
         valor = str(valor).strip()
 
         if valor == '':
             return None
 
-        if idioma == 'EN':
+        # Excel normalmente chega assim:
+        # 2024-10-28 00:00:00
+        # ou
+        # 2024-10-28
+
+        if valor.startswith('20') and '-' in valor:
+
+            data = pd.to_datetime(
+                valor,
+                errors='coerce'
+            )
+
+        elif idioma == 'EN':
 
             data = pd.to_datetime(
                 valor,
@@ -99,7 +107,7 @@ def converte_data(valor, idioma='PT'):
 
         return data.strftime('%Y-%m-%d')
 
-    except:
+    except Exception:
         return None
 
 
