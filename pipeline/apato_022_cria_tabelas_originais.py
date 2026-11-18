@@ -421,20 +421,18 @@ def run(pasta_cliente):
     if str(df_vendas.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
         df_vendas = df_vendas.iloc[1:]
 
+    df_vendas.columns = [
+        'sku',
+        'numero_ordem',
+        'data_desejada',
+        'qtde_desejada_orig'
+    ]
 
-df_vendas.columns = [
-    'sku',
-    'numero_ordem',
-    'data_desejada',
-    'qtde_desejada_orig'
-]
 
 print("\n================================")
 print("DATAS ANTES DA CONVERSAO")
 print("================================")
 print(df_vendas['data_desejada'].head(20))
-
-df_vendas['numero_ordem'] = df_vendas['numero_ordem'].fillna('AAAAAA')
 
 df_vendas['data_desejada'] = (
     df_vendas['data_desejada']
@@ -451,23 +449,11 @@ print("QTDE DATAS NULAS")
 print("================================")
 print(df_vendas['data_desejada'].isna().sum())
 
+print("\n================================")
+print("TOTAL DE REGISTROS")
+print("================================")
+print(len(df_vendas))
 
-
-    
-    print("\n================================")
-    print("AMOSTRA DAS DATAS")
-    print("================================")
-    print(df_vendas['data_desejada'].head(20))
-
-    print("\n================================")
-    print("DATAS NULAS")
-    print("================================")
-    print(df_vendas['data_desejada'].isna().sum())
-
-    print("\n================================")
-    print("TOTAL DE REGISTROS")
-    print("================================")
-    print(len(df_vendas))
         
     
     df_vendas['qtde_desejada_orig'] = df_vendas['qtde_desejada_orig'].apply(lambda x: converte_numero(x, 0))
