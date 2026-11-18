@@ -499,6 +499,23 @@ def run(pasta_cliente):
         )
     )
         
+   
+
+    print("\nAMOSTRA DE DATAS:\n")
+
+    print(
+        df_vendas[
+            ['numero_ordem', 'data_desejada']
+        ].head(20)
+    )
+
+    print(
+        df_vendas['data_desejada']
+        .isna()
+        .sum()
+    )
+        
+        
     
     df_vendas['qtde_desejada_orig'] = df_vendas['qtde_desejada_orig'].apply(lambda x: converte_numero(x, 0))
 
