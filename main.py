@@ -303,12 +303,28 @@ from main import enviar_email_resend, enviar_email_erro
 cliente = '{cliente}'          # ← ID correto
 email_cliente = '{email_cliente}'
 nome_cliente = '{nome_cliente}'  # ← nome correto
+idioma_cliente = '{idioma_cliente}'
+
+print("IDIOMA NO SUBPROCESSO:", idioma_cliente)
 
 pasta_cliente = '/app/clientes/' + cliente
+
+
+with open(
+    os.path.join(pasta_cliente, "idioma.txt"),
+    "w",
+    encoding="utf-8"
+) as f:
+
+    f.write(idioma_cliente)
+
+
 
 try:
 
     processar_cliente(pasta_cliente)
+
+    
 
     import glob
 

@@ -169,6 +169,35 @@ def preparar_tabela(conn, nome_tabela, ddl):
 # ============================================================
 
 def run(pasta_cliente):
+    
+    
+    arquivo_idioma = os.path.join(
+    pasta_cliente,
+    "idioma.txt"
+)
+
+if os.path.exists(arquivo_idioma):
+
+    with open(
+        arquivo_idioma,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        idioma_cliente = (
+            f.read()
+            .strip()
+            .upper()
+        )
+
+else:
+
+    idioma_cliente = "PT"
+
+
+print("IDIOMA DO CLIENTE:", idioma_cliente)
+    
+    
 
     pasta_entrada = os.path.join(pasta_cliente, "entrada")
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
@@ -462,9 +491,13 @@ def run(pasta_cliente):
 
     df_vendas['data_desejada'] = (
         df_vendas['data_desejada']
-        .apply(converte_data)
+        .apply(
+            lambda x: converte_data(
+                x,
+                idioma_cliente
+            )
+        )
     )
-    
         
     
     df_vendas['qtde_desejada_orig'] = df_vendas['qtde_desejada_orig'].apply(lambda x: converte_numero(x, 0))
