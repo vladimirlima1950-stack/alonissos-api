@@ -428,6 +428,12 @@ def run(pasta_cliente):
         'qtde_desejada_orig'
     ]
 
+    df_vendas['numero_ordem'] = (
+        df_vendas['numero_ordem']
+        .fillna('AAAAAA')
+    )
+
+
 
     print("\n================================")
     print("DATAS ANTES DA CONVERSAO")
