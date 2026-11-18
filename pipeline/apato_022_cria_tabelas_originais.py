@@ -104,7 +104,7 @@ def converte_data(valor, idioma='PT'):
 
 
 
--
+
 
 def ler_arquivo(caminho):
 
