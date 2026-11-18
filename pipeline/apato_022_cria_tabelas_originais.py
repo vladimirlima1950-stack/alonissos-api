@@ -429,10 +429,10 @@ def run(pasta_cliente):
     ]
 
 
-print("\n================================")
-print("DATAS ANTES DA CONVERSAO")
-print("================================")
-print(df_vendas['data_desejada'].head(20))
+    print("\n================================")
+    print("DATAS ANTES DA CONVERSAO")
+    print("================================")
+    print(df_vendas['data_desejada'].head(20))
 
 df_vendas['data_desejada'] = (
     df_vendas['data_desejada']
