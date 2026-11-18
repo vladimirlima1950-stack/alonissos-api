@@ -58,24 +58,43 @@ def converte_numero(valor, padrao=0):
     except:
         return padrao
 
+def converte_data(valor, idioma='PT'):
 
-def converte_data(valor):
     try:
+
         if pd.isna(valor):
             return None
 
-        data = pd.to_datetime(
-            valor,
-            errors='coerce',
-            dayfirst=True
-        )
+        valor = str(valor).strip()
+
+        if valor == '':
+            return None
+
+        if idioma == 'EN':
+
+            data = pd.to_datetime(
+                valor,
+                format='%m/%d/%Y',
+                errors='coerce'
+            )
+
+        else:
+
+            data = pd.to_datetime(
+                valor,
+                format='%d/%m/%Y',
+                errors='coerce'
+            )
 
         if pd.isna(data):
             return None
+
         return data.strftime('%Y-%m-%d')
 
-    except: 
+    except:
         return None
+        
+
 
 
 def ler_arquivo(caminho):
