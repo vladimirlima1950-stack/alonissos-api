@@ -176,19 +176,19 @@ def run(pasta_cliente):
         "idioma.txt"
     )
 
-if os.path.exists(arquivo_idioma):
+    if os.path.exists(arquivo_idioma):
 
-    with open(
-        arquivo_idioma,
-        "r",
-        encoding="utf-8"
-    ) as f:
+        with open(
+            arquivo_idioma,
+            "r",
+            encoding="utf-8"
+        ) as f:
 
-        idioma_cliente = (
-            f.read()
-            .strip()
-            .upper()
-        )
+            idioma_cliente = (
+                f.read()
+                .strip()
+                .upper()
+            )
 
     else:
 
