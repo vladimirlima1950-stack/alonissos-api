@@ -434,10 +434,10 @@ def run(pasta_cliente):
     print("================================")
     print(df_vendas['data_desejada'].head(20))
 
-df_vendas['data_desejada'] = (
-    df_vendas['data_desejada']
-    .apply(converte_data)
-)
+    df_vendas['data_desejada'] = (
+        df_vendas['data_desejada']
+        .apply(converte_data)
+    )
 
     print("\n================================")
     print("DATAS APOS A CONVERSAO")
