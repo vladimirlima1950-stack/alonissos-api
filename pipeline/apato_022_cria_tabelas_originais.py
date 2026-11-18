@@ -426,6 +426,23 @@ def run(pasta_cliente):
 
     df_vendas['numero_ordem'] = df_vendas['numero_ordem'].fillna('AAAAAA')
     df_vendas['data_desejada'] = df_vendas['data_desejada'].apply(converte_data)
+    
+    print("\n================================")
+    print("AMOSTRA DAS DATAS")
+    print("================================")
+    print(df_vendas['data_desejada'].head(20))
+
+    print("\n================================")
+    print("DATAS NULAS")
+    print("================================")
+    print(df_vendas['data_desejada'].isna().sum())
+
+    print("\n================================")
+    print("TOTAL DE REGISTROS")
+    print("================================")
+    print(len(df_vendas))
+        
+    
     df_vendas['qtde_desejada_orig'] = df_vendas['qtde_desejada_orig'].apply(lambda x: converte_numero(x, 0))
 
     conn.register('df_vendas', df_vendas)
