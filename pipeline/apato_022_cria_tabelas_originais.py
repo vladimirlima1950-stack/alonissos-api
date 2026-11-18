@@ -58,12 +58,20 @@ def converte_numero(valor, padrao=0):
     except:
         return padrao
 
+
+
+
+
 def converte_data(valor, idioma='PT'):
 
     try:
 
         if pd.isna(valor):
             return None
+
+        # Se o Excel já entregou um datetime
+        if isinstance(valor, datetime):
+            return valor.strftime('%Y-%m-%d')
 
         valor = str(valor).strip()
 
@@ -93,9 +101,10 @@ def converte_data(valor, idioma='PT'):
 
     except:
         return None
-        
 
 
+
+-
 
 def ler_arquivo(caminho):
 
