@@ -422,10 +422,37 @@ def run(pasta_cliente):
         df_vendas = df_vendas.iloc[1:]
 
 
-    df_vendas.columns = ['sku', 'numero_ordem', 'data_desejada', 'qtde_desejada_orig']
+df_vendas.columns = [
+    'sku',
+    'numero_ordem',
+    'data_desejada',
+    'qtde_desejada_orig'
+]
 
-    df_vendas['numero_ordem'] = df_vendas['numero_ordem'].fillna('AAAAAA')
-    df_vendas['data_desejada'] = df_vendas['data_desejada'].apply(converte_data)
+print("\n================================")
+print("DATAS ANTES DA CONVERSAO")
+print("================================")
+print(df_vendas['data_desejada'].head(20))
+
+df_vendas['numero_ordem'] = df_vendas['numero_ordem'].fillna('AAAAAA')
+
+df_vendas['data_desejada'] = (
+    df_vendas['data_desejada']
+    .apply(converte_data)
+)
+
+print("\n================================")
+print("DATAS APOS A CONVERSAO")
+print("================================")
+print(df_vendas['data_desejada'].head(20))
+
+print("\n================================")
+print("QTDE DATAS NULAS")
+print("================================")
+print(df_vendas['data_desejada'].isna().sum())
+
+
+
     
     print("\n================================")
     print("AMOSTRA DAS DATAS")
