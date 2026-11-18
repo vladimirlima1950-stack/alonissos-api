@@ -492,8 +492,23 @@ def run(pasta_cliente):
     print(df_vendas.head(20))
     print("=========================\n")
     
-    if str(df_vendas.iloc[0,0]).strip().upper() in ['SKU', 'CODIGO', 'CÓDIGO', 'ITEM']:
+    
+    
+    primeiro_valor = str(
+        df_vendas.iloc[0,0]
+    ).strip().upper()
+
+    if (
+        'ITEM' in primeiro_valor
+        or 'SKU' in primeiro_valor
+        or 'CODIGO' in primeiro_valor
+        or 'CÓDIGO' in primeiro_valor
+    ):
         df_vendas = df_vendas.iloc[1:]
+        
+    
+    
+        
 
     df_vendas.columns = [
         'sku',
