@@ -1,5 +1,6 @@
 import os
 import duckdb
+import pandas as pd
 
 def run(pasta_cliente):
 
@@ -87,5 +88,19 @@ def run(pasta_cliente):
         """, [grupo_atual, limmin, limmax])
 
     print("tb_class_valores1 criada com sucesso, totalmente equivalente ao MySQL.")
+    
+    import pandas as pd
+
+
+    df_preview = conn.execute("""
+        SELECT *
+        FROM tb_class_valores1
+        LIMIT 5
+    """).fetchdf()
+
+    print("\nPrimeiras 5 linhas de tb_class_valores1:")
+    print(df_preview)
+
+    print("\ntb_class_valores1 criada com sucesso.")
 
     conn.close()
