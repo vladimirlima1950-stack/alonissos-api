@@ -77,6 +77,26 @@ def run(pasta_cliente):
             VALUES (?, ?, ?, ?, ?, NULL, ?)
         """, [sku, valor, situacao, porct, acumulado, idx + 1])
 
+    # ============================================================
+    # Mostrar as 5 primeiras linhas da tabela gerada
+    # ============================================================
+
+    df_preview = conn.execute("""
+        SELECT *
+        FROM tb_class_valores2
+        ORDER BY id
+        LIMIT 5
+    """).fetchdf()
+
+    print("\nPrimeiras 5 linhas de tb_class_valores2:")
+    print(df_preview)
+
+   
+
+
+
+
+
     print("Tabela tb_class_valores2 criada com sucesso com percentuais e acumulados.")
 
     conn.close()

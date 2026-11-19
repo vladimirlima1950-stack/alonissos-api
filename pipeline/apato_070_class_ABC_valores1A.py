@@ -92,14 +92,6 @@ def run(pasta_cliente):
     import pandas as pd
 
 
-    df_preview = conn.execute("""
-        SELECT *
-        FROM tb_class_valores1
-        LIMIT 50
-    """).fetchdf()
-
-    print("\nPrimeiras 50 linhas de tb_class_valores1:")
-    print(df_preview)
 
     print("\ntb_class_valores1 criada com sucesso.")
 
