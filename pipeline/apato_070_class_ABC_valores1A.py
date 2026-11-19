@@ -89,7 +89,16 @@ def run(pasta_cliente):
 
     print("tb_class_valores1 criada com sucesso, totalmente equivalente ao MySQL.")
     
-    import pandas as pd
+    
+    df_preview = conn.execute("""
+        SELECT *
+        FROM tb_class_valores1
+        ORDER BY id
+        LIMIT 100
+    """).fetchdf()
+
+    print("\nPrimeiras 100 linhas de tb_class_valores1:")
+    print(df_preview)
 
 
 
