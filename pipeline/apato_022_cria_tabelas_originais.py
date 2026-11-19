@@ -352,6 +352,7 @@ def run(pasta_cliente):
         (df_status['sku'] != 'NAN')
     ]
 
+    
     df_status['situacao'] = (
         df_status['situacao']
         .fillna('ATIVO')
@@ -360,6 +361,25 @@ def run(pasta_cliente):
         .str.upper()
     )
 
+    # ------------------------------------------------------------
+    # Internacionalização do status
+    # ACTIVE -> ATIVO
+    # INACTIVE -> INATIVO
+    # ------------------------------------------------------------
+
+    df_status['situacao'] = (
+        df_status['situacao']
+        .replace({
+            'ACTIVE': 'ATIVO',
+            'INACTIVE': 'INATIVO'
+        })
+    )
+        
+    
+    
+    
+    
+    
     # ------------------------------------------------------------
     # Verificar conflitos de status
     #
