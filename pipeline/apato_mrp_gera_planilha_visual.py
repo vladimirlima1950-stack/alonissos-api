@@ -143,7 +143,146 @@ def run(pasta_cliente):
         .merge(df_custo, on="sku", how="left")
     )
 
-    ws_base.append(list(df_base.columns))
+    
+    
+    
+    cabecalhos_base_pt = [
+        "Frequência de Pedidos",
+        "Importância no Faturamento",
+        "SKU",
+
+        "Mês -24",
+        "Mês -23",
+        "Mês -22",
+        "Mês -21",
+        "Mês -20",
+        "Mês -19",
+        "Mês -18",
+        "Mês -17",
+        "Mês -16",
+        "Mês -15",
+        "Mês -14",
+        "Mês -13",
+        "Mês -12",
+        "Mês -11",
+        "Mês -10",
+        "Mês -9",
+        "Mês -8",
+        "Mês -7",
+        "Mês -6",
+        "Mês -5",
+        "Mês -4",
+        "Mês -3",
+        "Mês -2",
+        "Mês -1",
+
+        "Mês Corrente",
+
+        "Mês +1",
+        "Mês +2",
+        "Mês +3",
+        "Mês +4",
+        "Mês +5",
+        "Mês +6",
+        "Mês +7",
+        "Mês +8",
+        "Mês +9",
+        "Mês +10",
+        "Mês +11",
+
+        "Classe ABC Pedidos",
+        "Classe ABC Valores",
+
+        "ES Mês Corrente",
+        "ES Mês +1",
+        "ES Mês +2",
+        "ES Mês +3",
+        "ES Mês +4",
+        "ES Mês +5",
+        "ES Mês +6",
+        "ES Mês +7",
+        "ES Mês +8",
+        "ES Mês +9",
+        "ES Mês +10",
+        "ES Mês +11",
+
+        "Estoque Atual",
+        "Lead Time (dias)",
+        "Custo Unitário"
+    ]
+
+    cabecalhos_base_en = [
+        "Order Frequency",
+        "Revenue Importance",
+        "SKU",
+
+        "Month -24",
+        "Month -23",
+        "Month -22",
+        "Month -21",
+        "Month -20",
+        "Month -19",
+        "Month -18",
+        "Month -17",
+        "Month -16",
+        "Month -15",
+        "Month -14",
+        "Month -13",
+        "Month -12",
+        "Month -11",
+        "Month -10",
+        "Month -9",
+        "Month -8",
+        "Month -7",
+        "Month -6",
+        "Month -5",
+        "Month -4",
+        "Month -3",
+        "Month -2",
+        "Month -1",
+
+        "Current Month",
+
+        "Month +1",
+        "Month +2",
+        "Month +3",
+        "Month +4",
+        "Month +5",
+        "Month +6",
+        "Month +7",
+        "Month +8",
+        "Month +9",
+        "Month +10",
+        "Month +11",
+
+        "ABC Order Class",
+        "ABC Revenue Class",
+
+        "SS Current Month",
+        "SS Month +1",
+        "SS Month +2",
+        "SS Month +3",
+        "SS Month +4",
+        "SS Month +5",
+        "SS Month +6",
+        "SS Month +7",
+        "SS Month +8",
+        "SS Month +9",
+        "SS Month +10",
+        "SS Month +11",
+
+        "Current Inventory",
+        "Lead Time (Days)",
+        "Unit Cost"
+    ]
+
+    if idioma == "en":
+        ws_base.append(cabecalhos_base_en)
+    else:
+        ws_base.append(cabecalhos_base_pt)
+            
+    
+    
     for _, row in df_base.iterrows():
         ws_base.append(list(row.values))
 
