@@ -134,7 +134,7 @@ def converte_data(valor, idioma='PT'):
 
 def ler_arquivo(caminho):
 
-    print("ARQUIVO:", caminho)
+    
 
     if caminho.lower().endswith('.csv'):
         return pd.read_csv(
@@ -161,7 +161,7 @@ def ler_arquivo(caminho):
 def preparar_tabela(conn, nome_tabela, ddl):
     conn.execute(f"DROP TABLE IF EXISTS {nome_tabela}")
     conn.execute(ddl)
-    print(f" Tabela {nome_tabela} recriada.")
+    
 
 
 # ============================================================
@@ -195,7 +195,7 @@ def run(pasta_cliente):
         idioma_cliente = "PT"
 
 
-    print("IDIOMA DO CLIENTE:", idioma_cliente)
+    
     
     
 
@@ -222,9 +222,6 @@ def run(pasta_cliente):
     df_custo = ler_arquivo(arquivo_custo)
     
     
-    print("\n===== AMOSTRA ARQUIVO CUSTOS =====")
-    print(df_custo.head(20))
-    print("=================================\n")
     
     
     
@@ -236,9 +233,6 @@ def run(pasta_cliente):
 
     df_custo['custo_unit'] = df_custo['custo_unit'].apply(lambda x: converte_numero(x, 1.00))
     
-    print("\n===== CUSTOS APÓS CONVERSÃO =====")
-    print(df_custo.head(20))
-    print("================================\n")
     
     
     df_custo.loc[df_custo['custo_unit'] < 0, 'custo_unit'] = 1
@@ -508,9 +502,6 @@ def run(pasta_cliente):
 
     df_vendas = ler_arquivo(arquivo_vendas)
     
-    print("\n===== VENDAS BRUTAS =====")
-    print(df_vendas.head(20))
-    print("=========================\n")
     
     
     
@@ -554,21 +545,6 @@ def run(pasta_cliente):
     )
         
    
-
-    print("\nAMOSTRA DE DATAS:\n")
-
-    print(
-        df_vendas[
-            ['numero_ordem', 'data_desejada']
-        ].head(20)
-    )
-
-    print(
-        df_vendas['data_desejada']
-        .isna()
-        .sum()
-    )
-        
         
     
     df_vendas['qtde_desejada_orig'] = df_vendas['qtde_desejada_orig'].apply(lambda x: converte_numero(x, 0))
@@ -588,6 +564,6 @@ def run(pasta_cliente):
         FROM tb_vendas_orig
     """)
 
-    print("Todas as tabelas foram recriadas e os dados foram importados com sucesso!")
+    
 
     conn.close()
