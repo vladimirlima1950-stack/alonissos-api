@@ -3,6 +3,8 @@ import duckdb
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, numbers
+from pipeline.translation import t, ler_idioma
+
 
 
 pd.set_option('display.max_columns', None)
@@ -27,8 +29,11 @@ def encontrar_coluna(con, tabela, palavra):
 # ============================================================
 def run(pasta_cliente):
 
+    idioma = ler_idioma(pasta_cliente)
+
     pasta_saida = os.path.join(pasta_cliente, "saida")
-    os.makedirs(pasta_saida, exist_ok=True)
+
+
 
     pasta_processamento = os.path.join(pasta_cliente, "processamento")
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
