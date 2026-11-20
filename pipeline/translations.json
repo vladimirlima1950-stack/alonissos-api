@@ -204,9 +204,72 @@
 	"corr_mais11": {
 	  "pt": "Mês +11",
 	  "en": "Month +11"
+	},
+	
+	
+	"es_mes_corrente": {
+	  "pt": "ES Mês Corrente",
+	  "en": "SS Current Month"
+	},
+
+	"es_corr_mais1": {
+	  "pt": "ES Mês +1",
+	  "en": "SS Month +1"
+	},
+
+	"es_corr_mais2": {
+	  "pt": "ES Mês +2",
+	  "en": "SS Month +2"
+	},
+
+	"es_corr_mais3": {
+	  "pt": "ES Mês +3",
+	  "en": "SS Month +3"
+	},
+
+
+	"es_corr_mais4": {
+	  "pt": "ES Mês +4",
+	  "en": "SS Month +4"
+	},
+
+		
+	"es_corr_mais5": {
+	  "pt": "ES Mês +5",
+	  "en": "SS Month +5"
+	},
+
+	"es_corr_mais6": {
+	  "pt": "ES Mês +6",
+	  "en": "SS Month +6"
+	},
+
+	"es_corr_mais7": {
+	  "pt": "ES Mês +7",
+	  "en": "SS Month +7"
+	},
+
+
+	"es_corr_mais8": {
+	  "pt": "ES Mês +8",
+	  "en": "SS Month +8"
+	},
+
+	"es_corr_mais9": {
+	  "pt": "ES Mês +9",
+	  "en": "SS Month +9"
+	},
+
+	"es_corr_mais10": {
+	  "pt": "ES Mês +10",
+	  "en": "SS Month +10"
+	},
+
+	"es_corr_mais11": {
+	  "pt": "ES Mês +11",
+	  "en": "SS Month +11"
 	}
 
-	
 	
   }
 }
