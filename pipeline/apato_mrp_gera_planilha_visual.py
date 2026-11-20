@@ -43,13 +43,13 @@ def run(pasta_cliente):
     # ============================================================
     
     
-        if idioma == "en":
+    if idioma == "en":
 
-            nome_template = "Graficos auxiliares EN.xlsx"
+        nome_template = "Graficos auxiliares EN.xlsx"
 
-        else:
+    else:
 
-            nome_template = "Graficos auxiliares PT.xlsx"
+        nome_template = "Graficos auxiliares PT.xlsx"
 
 
     caminho_template = os.path.join(
@@ -106,11 +106,11 @@ def run(pasta_cliente):
         "Lead Time (Days)"
     ]
 
-if idioma == "en":
-    ws_mrp.append(cabecalhos_mrp_en)
-else:
-    ws_mrp.append(cabecalhos_mrp_pt)
-    
+    if idioma == "en":
+        ws_mrp.append(cabecalhos_mrp_en)
+    else:
+        ws_mrp.append(cabecalhos_mrp_pt)
+        
     
     
     
