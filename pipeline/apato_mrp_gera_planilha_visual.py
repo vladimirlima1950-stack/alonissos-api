@@ -7,11 +7,21 @@ import pandas as pd
 from datetime import datetime
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import numbers
+from pipeline.translation import ler_idioma
 
 
+    
 def run(pasta_cliente):
 
-    pasta_processamento = os.path.join(pasta_cliente, "processamento")
+    idioma = ler_idioma(pasta_cliente)
+
+    pasta_processamento = os.path.join(
+        pasta_cliente,
+        "processamento"
+    )    
+    
+    
+    
     caminho_banco = os.path.join(pasta_processamento, "previsao.duckdb")
 
     con = duckdb.connect(caminho_banco, read_only=False)
@@ -32,12 +42,25 @@ def run(pasta_cliente):
     # 2) Criar workbook
     # ============================================================
     
-    caminho_template = os.path.join(
-    os.path.dirname(__file__),
-    "templates",
-    "Graficos auxiliares.xlsx"
-    )
+    
+    if idioma == "en":
 
+        nome_template = "Graficos auxiliares EN.xlsx"
+
+    else:
+
+        nome_template = "Graficos auxiliares PT.xlsx"
+
+
+    caminho_template = os.path.join(
+        os.path.dirname(__file__),
+        "templates",
+        nome_template
+    )
+    
+    
+    
+    
     wb = load_workbook(caminho_template)
     
 
