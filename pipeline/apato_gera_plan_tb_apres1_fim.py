@@ -6,7 +6,7 @@ from pipeline.translation import t
 
 def run(pasta_cliente):
     
-    idioma = "en"
+    idioma.txt
 
     pasta_saida = os.path.join(pasta_cliente, "saida")
     os.makedirs(pasta_saida, exist_ok=True)
