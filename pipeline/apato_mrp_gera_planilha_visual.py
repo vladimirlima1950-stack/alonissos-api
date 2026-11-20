@@ -75,7 +75,47 @@ def run(pasta_cliente):
     else:
         ws_mrp = wb.create_sheet("MRP Completo")
 
-    ws_mrp.append(list(df_mrp.columns))
+    
+    cabecalhos_mrp_pt = [
+        "SKU",
+        "Mês",
+        "Demanda",
+        "Previsão",
+        "Estoque de Segurança",
+        "Estoque Inicial",
+        "Necessidade Líquida",
+        "Ordem Planejada",
+        "Mês de Liberação",
+        "Estoque Projetado",
+        "Custo da Ordem Planejada",
+        "Lead Time (dias)"
+    ]
+
+    cabecalhos_mrp_en = [
+        "SKU",
+        "Month",
+        "Demand",
+        "Forecast",
+        "Safety Stock",
+        "Initial Inventory",
+        "Net Requirement",
+        "Planned Order",
+        "Release Month",
+        "Projected Inventory",
+        "Planned Order Cost",
+        "Lead Time (Days)"
+    ]
+
+if idioma == "en":
+    ws_mrp.append(cabecalhos_mrp_en)
+else:
+    ws_mrp.append(cabecalhos_mrp_pt)
+    
+    
+    
+    
+    
+    
 
     for _, row in df_mrp.iterrows():
         ws_mrp.append(list(row.values))
