@@ -2,14 +2,21 @@ import os
 import duckdb
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, numbers
-from pipeline.translation import t
+from pipeline.translation import t, ler_idioma
+
 
 def run(pasta_cliente):
-    
-    idioma.txt
+
+    idioma = ler_idioma(pasta_cliente)
+
+    print("IDIOMA LIDO:", idioma)
 
     pasta_saida = os.path.join(pasta_cliente, "saida")
     os.makedirs(pasta_saida, exist_ok=True)
+
+
+
+
 
     caminho_duckdb = os.path.join(pasta_cliente, "processamento", "previsao.duckdb")
 
