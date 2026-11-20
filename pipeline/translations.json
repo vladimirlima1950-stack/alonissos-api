@@ -268,7 +268,28 @@
 	"es_corr_mais11": {
 	  "pt": "ES Mês +11",
 	  "en": "SS Month +11"
+	},
+	
+	"qtde_estoque": {
+	  "pt": "Quantidade no Estoque",
+	  "en": "Quantity in Stock"
+	},
+
+	"custo_unitario": {
+	  "pt": "Custo Unitário",
+	  "en": "Unit Cost"
+	},
+
+	"valor_total_estoque": {
+	  "pt": "Valor Total em Estoque",
+	  "en": "Total Inventory Value"
+	},
+
+	"perc_valor_estoque": {
+	  "pt": "Porcentagem do Valor do Estoque",
+	  "en": "Percentage of Inventory Value"
 	}
+
 
 	
   }

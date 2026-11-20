@@ -72,11 +72,19 @@ def run(pasta_cliente):
     # ============================================================
     # Títulos e campos (mantidos como no PHP)
     # ============================================================
+
     titulos = [
-        'frequência de pedidos', 'importância no faturamento', 'sku número',
-        'quantidade no estoque', 'custo unitário', 'valor total em estoque',
-        'porcentagem do valor do estoque'
+        t("columns.frequencia_pedidos", idioma),
+        t("columns.importancia_faturamento", idioma),
+        t("columns.sku_numero", idioma),
+        t("columns.qtde_estoque", idioma),
+        t("columns.custo_unitario", idioma),
+        t("columns.valor_total_estoque", idioma),
+        t("columns.perc_valor_estoque", idioma)
     ]
+
+
+
 
     campos = [
         col_class_ped, col_class_val, col_sku,
