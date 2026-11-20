@@ -43,13 +43,13 @@ def run(pasta_cliente):
     # ============================================================
     
     
-    if idioma == "en":
+        if idioma == "en":
 
-        nome_template = "Graficos auxiliares EN.xlsx"
+            nome_template = "Graficos auxiliares EN.xlsx"
 
-    else:
+        else:
 
-        nome_template = "Graficos auxiliares PT.xlsx"
+            nome_template = "Graficos auxiliares PT.xlsx"
 
 
     caminho_template = os.path.join(
