@@ -130,7 +130,7 @@ def run(pasta_cliente):
 
             # Formatação monetária
             if campo in [col_custo, col_total]:
-                cell.number_format = 'R$ #,##0.00'
+                cell.number_format = '#,##0.00'
 
             # Percentual
             if campo == col_porc:
