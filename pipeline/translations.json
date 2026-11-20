@@ -1,0 +1,52 @@
+{
+  "columns": {
+    "sku_numero": {
+      "pt": "SKU Número",
+      "en": "SKU Number"
+    },
+    "ativo_inativo": {
+      "pt": "Ativo/Inativo",
+      "en": "Active/Inactive"
+    },
+    "frequencia_pedidos": {
+      "pt": "Frequência de Pedidos",
+      "en": "Order Frequency"
+    },
+    "importancia_faturamento": {
+      "pt": "Importância no Faturamento",
+      "en": "Revenue Importance"
+    },
+    "qtde_pedidos_12m": {
+      "pt": "Quantidade de Pedidos em 12 Meses",
+      "en": "Quantity of Orders in 12 Months"
+    },
+    "perc_pedidos_12m": {
+      "pt": "Porcentagem de Pedidos em 12 Meses",
+      "en": "Percentage of Orders in 12 Months"
+    },
+    "custo_produto_12m": {
+      "pt": "Custo do Produto em 12 Meses",
+      "en": "Product Cost in 12 Months"
+    },
+    "perc_custo_12m": {
+      "pt": "Porcentagem do Custo em 12 Meses",
+      "en": "Percentage of Cost in 12 Months"
+    },
+    "custo_estoque": {
+      "pt": "Custo do Estoque",
+      "en": "Inventory Cost"
+    },
+    "perc_custo_estoque": {
+      "pt": "Porcentagem do Custo do Estoque",
+      "en": "Percentage of Inventory Cost"
+    },
+    "giro_estoque": {
+      "pt": "Giro do Estoque",
+      "en": "Inventory Turnover"
+    },
+    "cobertura_semanas": {
+      "pt": "Cobertura em Semanas",
+      "en": "Weeks of Coverage"
+    }
+  }
+}
