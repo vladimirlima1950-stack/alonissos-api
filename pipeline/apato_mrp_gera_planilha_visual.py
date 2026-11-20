@@ -58,7 +58,7 @@ def run(pasta_cliente):
     col_custo_op = df_mrp.columns.get_loc("custo_ordem_planejada") + 1
 
     for row in range(2, ws_mrp.max_row + 1):
-        ws_mrp.cell(row=row, column=col_custo_op).number_format = 'R$ #,##0.00'
+        ws_mrp.cell(row=row, column=col_custo_op).number_format = '#,##0.00'
 
     # ============================================================
     # 4) Aba: Base de Dados
@@ -102,7 +102,7 @@ def run(pasta_cliente):
     col_custo = resumo_sku.columns.get_loc("custo_unitario") + 1
 
     for row in range(2, ws_sku.max_row + 1):
-        ws_sku.cell(row=row, column=col_custo).number_format = 'R$ #,##0.00'
+        ws_sku.cell(row=row, column=col_custo).number_format = '#,##0.00'
 
     # ============================================================
     # 6) Salvar planilha
