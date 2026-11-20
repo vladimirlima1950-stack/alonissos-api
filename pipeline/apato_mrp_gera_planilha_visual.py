@@ -70,7 +70,10 @@ def run(pasta_cliente):
     # 3) Aba: MRP Completo
     # ============================================================
 
-    ws_mrp = wb.create_sheet("MRP Completo")
+    if idioma == "en":
+        ws_mrp = wb.create_sheet("Complete MRP")
+    else:
+        ws_mrp = wb.create_sheet("MRP Completo")
 
     ws_mrp.append(list(df_mrp.columns))
 
@@ -87,7 +90,10 @@ def run(pasta_cliente):
     # 4) Aba: Base de Dados
     # ============================================================
 
-    ws_base = wb.create_sheet("Base de Dados")
+    if idioma == "en":
+        ws_base = wb.create_sheet("Data Repository")
+    else:
+        ws_base = wb.create_sheet("Base de Dados")
 
     df_base = (
         df_dmd_fcst
@@ -105,7 +111,10 @@ def run(pasta_cliente):
     # 5) Aba: Dados do SKU (resumo por SKU)
     # ============================================================
 
-    ws_sku = wb.create_sheet("Dados do SKU")
+    if idioma == "en":
+        ws_sku = wb.create_sheet("SKU Data")
+    else:
+        ws_sku = wb.create_sheet("Dados do SKU")
 
     # resumo sem ordem_planejada e sem custo_ordem_planejada
     resumo_sku = df_mrp.groupby("sku").agg({
