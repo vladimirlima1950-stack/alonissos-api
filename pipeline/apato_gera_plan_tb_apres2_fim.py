@@ -29,18 +29,19 @@ def run(pasta_cliente):
     # ============================================================
     # CABEÇALHOS E CAMPOS (mantidos exatamente como no PHP)
     # ============================================================
+    
     colunas = [
-        'frequência de pedidos',
-        'importância no faturamento',
-        'quantidade de diferentes produtos',
-        'porcentagem do produto',
-        'quantidade de pedidos em 12 meses',
-        'porcentagem de pedidos em 12 meses',
-        'custo do produto em 12 meses',
-        'porcentagem do custo em 12 meses',
-        'custo do estoque',
-        'porcentagem do custo do estoque',
-        'giro do estoque'
+        t("columns.frequencia_pedidos", idioma),
+        t("columns.importancia_faturamento", idioma),
+        t("columns.qtde_diferentes_produtos", idioma),
+        t("columns.porc_produto", idioma),
+        t("columns.qtde_pedidos_12m", idioma),
+        t("columns.perc_pedidos_12m", idioma),
+        t("columns.custo_produto_12m", idioma),
+        t("columns.perc_custo_12m", idioma),
+        t("columns.custo_estoque", idioma),
+        t("columns.perc_custo_estoque", idioma),
+        t("columns.giro_estoque", idioma)
     ]
 
     campos = [

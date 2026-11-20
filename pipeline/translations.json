@@ -47,6 +47,17 @@
     "cobertura_semanas": {
       "pt": "Cobertura em Semanas",
       "en": "Weeks of Coverage"
+    },
+	
+	"qtde_diferentes_produtos": {
+      "pt": "Quantidade de Diferentes Produtos",
+      "en": "Quantity of Different Products"
+    },
+    "porc_produto": {
+      "pt": "Porcentagem do Produto",
+      "en": "Percentage of Products"
     }
+	
+	
   }
 }
