@@ -166,7 +166,31 @@ def run(pasta_cliente):
     # adicionar custo_unitario
     resumo_sku = resumo_sku.merge(df_custo, on="sku", how="left")
 
-    ws_sku.append(list(resumo_sku.columns))
+    
+    cabecalhos_sku_pt = [
+        "SKU",
+        "Demanda",
+        "Previsão",
+        "Lead Time (dias)",
+        "Custo Unitário"
+    ]
+
+    cabecalhos_sku_en = [
+        "SKU",
+        "Demand",
+        "Forecast",
+        "Lead Time (Days)",
+        "Unit Cost"
+    ]
+
+    if idioma == "en":
+        ws_sku.append(cabecalhos_sku_en)
+    else:
+        ws_sku.append(cabecalhos_sku_pt)
+    
+    
+    
+    
     for _, row in resumo_sku.iterrows():
         ws_sku.append(list(row.values))
 
