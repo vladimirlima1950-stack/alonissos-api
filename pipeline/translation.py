@@ -18,3 +18,14 @@ def t(chave, idioma):
         valor = valor[parte]
 
     return valor[idioma]
+
+
+def ler_idioma(pasta_cliente):
+
+    caminho = os.path.join(
+        pasta_cliente,
+        "idioma.txt"
+    )
+
+    with open(caminho, "r", encoding="utf-8") as f:
+        return f.read().strip().lower()
