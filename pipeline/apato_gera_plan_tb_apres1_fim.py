@@ -2,8 +2,11 @@ import os
 import duckdb
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, numbers
+from translation import t
 
 def run(pasta_cliente):
+    
+    idioma = "en"
 
     pasta_saida = os.path.join(pasta_cliente, "saida")
     os.makedirs(pasta_saida, exist_ok=True)
@@ -29,13 +32,23 @@ def run(pasta_cliente):
     wb = Workbook()
     ws = wb.active
 
+   
     headers = [
-        'sku número', 'ativo_inativo', 'frequência de pedidos', 'importância no faturamento',
-        'quantidade de pedidos em 12 meses', 'porcentagem de pedidos em 12 meses',
-        'custo do produto em 12 meses', 'porcentagem do custo em 12 meses',
-        'custo do estoque', 'porcentagem do custo do estoque',
-        'giro do estoque', 'cobertura em semanas'
+        t("columns.sku_numero", idioma),
+        t("columns.ativo_inativo", idioma),
+        t("columns.frequencia_pedidos", idioma),
+        t("columns.importancia_faturamento", idioma),
+        t("columns.qtde_pedidos_12m", idioma),
+        t("columns.perc_pedidos_12m", idioma),
+        t("columns.custo_produto_12m", idioma),
+        t("columns.perc_custo_12m", idioma),
+        t("columns.custo_estoque", idioma),
+        t("columns.perc_custo_estoque", idioma),
+        t("columns.giro_estoque", idioma),
+        t("columns.cobertura_semanas", idioma)
     ]
+   
+   
 
     ws.append(headers)
 
