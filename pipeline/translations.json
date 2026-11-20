@@ -56,7 +56,156 @@
     "porc_produto": {
       "pt": "Porcentagem do Produto",
       "en": "Percentage of Products"
-    }
+    },
+	
+	
+	"mes_corrente": {
+	  "pt": "Mês Corrente",
+	  "en": "Current Month"
+	},
+
+	"corr_menos24": {
+	  "pt": "Mês -24",
+	  "en": "Month -24"
+	},
+	"corr_menos23": {
+	  "pt": "Mês -23",
+	  "en": "Month -23"
+	},
+	"corr_menos22": {
+	  "pt": "Mês -22",
+	  "en": "Month -22"
+	},
+	"corr_menos21": {
+	  "pt": "Mês -21",
+	  "en": "Month -21"
+	},
+	"corr_menos20": {
+	  "pt": "Mês -20",
+	  "en": "Month -20"
+	},
+	"corr_menos19": {
+	  "pt": "Mês -19",
+	  "en": "Month -19"
+	},
+	"corr_menos18": {
+	  "pt": "Mês -18",
+	  "en": "Month -18"
+	},
+	"corr_menos17": {
+	  "pt": "Mês -17",
+	  "en": "Month -17"
+	},
+	"corr_menos16": {
+	  "pt": "Mês -16",
+	  "en": "Month -16"
+	},
+	"corr_menos15": {
+	  "pt": "Mês -15",
+	  "en": "Month -15"
+	},
+	"corr_menos14": {
+	  "pt": "Mês -14",
+	  "en": "Month -14"
+	},
+	"corr_menos13": {
+	  "pt": "Mês -13",
+	  "en": "Month -13"
+	},
+	"corr_menos12": {
+	  "pt": "Mês -12",
+	  "en": "Month -12"
+	},
+	"corr_menos11": {
+	  "pt": "Mês -11",
+	  "en": "Month -11"
+	},
+	"corr_menos10": {
+	  "pt": "Mês -10",
+	  "en": "Month -10"
+	},
+	"corr_menos9": {
+	  "pt": "Mês -9",
+	  "en": "Month -9"
+	},
+	"corr_menos8": {
+	  "pt": "Mês -8",
+	  "en": "Month -8"
+	},
+	"corr_menos7": {
+	  "pt": "Mês -7",
+	  "en": "Month -7"
+	},
+	"corr_menos6": {
+	  "pt": "Mês -6",
+	  "en": "Month -6"
+	},
+	"corr_menos5": {
+	  "pt": "Mês -5",
+	  "en": "Month -5"
+	},
+	"corr_menos4": {
+	  "pt": "Mês -4",
+	  "en": "Month -4"
+	},
+	"corr_menos3": {
+	  "pt": "Mês -3",
+	  "en": "Month -3"
+	},
+	"corr_menos2": {
+	  "pt": "Mês -2",
+	  "en": "Month -2"
+	},
+	"corr_menos1": {
+	  "pt": "Mês -1",
+	  "en": "Month -1"
+	},
+
+	"corr_mais1": {
+	  "pt": "Mês +1",
+	  "en": "Month +1"
+	},
+	"corr_mais2": {
+	  "pt": "Mês +2",
+	  "en": "Month +2"
+	},
+	"corr_mais3": {
+	  "pt": "Mês +3",
+	  "en": "Month +3"
+	},
+	"corr_mais4": {
+	  "pt": "Mês +4",
+	  "en": "Month +4"
+	},
+	"corr_mais5": {
+	  "pt": "Mês +5",
+	  "en": "Month +5"
+	},
+	"corr_mais6": {
+	  "pt": "Mês +6",
+	  "en": "Month +6"
+	},
+	"corr_mais7": {
+	  "pt": "Mês +7",
+	  "en": "Month +7"
+	},
+	"corr_mais8": {
+	  "pt": "Mês +8",
+	  "en": "Month +8"
+	},
+	"corr_mais9": {
+	  "pt": "Mês +9",
+	  "en": "Month +9"
+	},
+	"corr_mais10": {
+	  "pt": "Mês +10",
+	  "en": "Month +10"
+	},
+	"corr_mais11": {
+	  "pt": "Mês +11",
+	  "en": "Month +11"
+	}
+
 	
 	
   }

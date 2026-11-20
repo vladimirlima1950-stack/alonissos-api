@@ -24,14 +24,55 @@ def run(pasta_cliente):
     # ============================================================
     # Cabeçalhos e campos (mantidos exatamente como no PHP)
     # ============================================================
+    
+    
+    
     titulos = [
-        'frequência de pedidos', 'importância no faturamento', 'sku número',
-        'corr_menos24','corr_menos23','corr_menos22','corr_menos21','corr_menos20','corr_menos19','corr_menos18',
-        'corr_menos17','corr_menos16','corr_menos15','corr_menos14','corr_menos13','corr_menos12','corr_menos11',
-        'corr_menos10','corr_menos9','corr_menos8','corr_menos7','corr_menos6','corr_menos5','corr_menos4','corr_menos3',
-        'corr_menos2','corr_menos1','mês corrente','corr_mais1','corr_mais2','corr_mais3','corr_mais4','corr_mais5',
-        'corr_mais6','corr_mais7','corr_mais8','corr_mais9','corr_mais10','corr_mais11'
+        t("columns.frequencia_pedidos", idioma),
+        t("columns.importancia_faturamento", idioma),
+        t("columns.sku_numero", idioma),
+
+        t("columns.corr_menos24", idioma),
+        t("columns.corr_menos23", idioma),
+        t("columns.corr_menos22", idioma),
+        t("columns.corr_menos21", idioma),
+        t("columns.corr_menos20", idioma),
+        t("columns.corr_menos19", idioma),
+        t("columns.corr_menos18", idioma),
+        t("columns.corr_menos17", idioma),
+        t("columns.corr_menos16", idioma),
+        t("columns.corr_menos15", idioma),
+        t("columns.corr_menos14", idioma),
+        t("columns.corr_menos13", idioma),
+        t("columns.corr_menos12", idioma),
+        t("columns.corr_menos11", idioma),
+        t("columns.corr_menos10", idioma),
+        t("columns.corr_menos9", idioma),
+        t("columns.corr_menos8", idioma),
+        t("columns.corr_menos7", idioma),
+        t("columns.corr_menos6", idioma),
+        t("columns.corr_menos5", idioma),
+        t("columns.corr_menos4", idioma),
+        t("columns.corr_menos3", idioma),
+        t("columns.corr_menos2", idioma),
+        t("columns.corr_menos1", idioma),
+
+        t("columns.mes_corrente", idioma),
+
+        t("columns.corr_mais1", idioma),
+        t("columns.corr_mais2", idioma),
+        t("columns.corr_mais3", idioma),
+        t("columns.corr_mais4", idioma),
+        t("columns.corr_mais5", idioma),
+        t("columns.corr_mais6", idioma),
+        t("columns.corr_mais7", idioma),
+        t("columns.corr_mais8", idioma),
+        t("columns.corr_mais9", idioma),
+        t("columns.corr_mais10", idioma),
+        t("columns.corr_mais11", idioma)
     ]
+
+
 
     campos = [
         'class_pedidos','class_valores','sku',
