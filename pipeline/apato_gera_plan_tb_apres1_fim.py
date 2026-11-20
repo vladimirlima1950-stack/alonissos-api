@@ -2,7 +2,7 @@ import os
 import duckdb
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, numbers
-from translation import t
+from pipeline.translation import t
 
 def run(pasta_cliente):
     
