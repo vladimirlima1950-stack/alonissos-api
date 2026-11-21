@@ -4,6 +4,7 @@ import ssl
 import subprocess
 import requests
 import base64
+from translation import t
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -93,41 +94,43 @@ async def upload_arquivo(cliente: str, campo: str, arquivo: UploadFile = File(..
 # ============================================================
 # FUNÇÃO DE ENVIO DE E‑MAIL DE ERRO (RESEND API)
 # ============================================================
-def enviar_email_erro(nome_cliente,
 
-                      email_destino,
-                      mensagem_erro):
+def enviar_email_erro(
+    nome_cliente,
+    email_destino,
+    mensagem_erro,
+    idioma_cliente
+):
+
+
 
     api_key = os.getenv("RESEND_API_KEY")
+
 
     if not api_key:
         print("ERRO: RESEND_API_KEY não encontrada.")
         return
 
-    html_body = f"""
-    <h2>Processamento interrompido</h2>
+    assunto = t(
+        "emails.erro_assunto",
+        idioma_cliente
+    )
 
-    <p>Olá, {nome_cliente}.</p>
+    html_body = t(
+        "emails_erro_corpo",
+        idioma_cliente
+    ).format(
+        nome_cliente=nome_cliente,
+        mensagem_erro=mensagem_erro
+    )
 
-    <p>
-    Foi encontrado um problema nos arquivos enviados.
-    </p>
 
-    <pre>
-{mensagem_erro}
-    </pre>
 
-    <p>
-    Corrija os dados e realize um novo envio.
-    </p>
-
-    <p>MUPE Consultoria</p>
-    """
 
     payload = {
         "from": "MUPE Consultoria <vladimir.lima@mupeconsult.com>",
         "to": [email_destino],
-        "subject": "Erro no processamento dos arquivos",
+        "subject": assunto,
         "html": html_body
     }
 
@@ -157,52 +160,39 @@ def enviar_email_erro(nome_cliente,
 # FUNÇÃO DE ENVIO DE E‑MAIL (RESEND API)
 # ============================================================
 
-def enviar_email_resend(nome_cliente, email_destino, anexos):
+
+
+def enviar_email_resend(
+    nome_cliente,
+    email_destino,
+    anexos,
+    idioma_cliente
+):
+
+
 
     api_key = os.getenv("RESEND_API_KEY")
+    
     if not api_key:
         print("ERRO: RESEND_API_KEY não encontrada no ambiente Railway.")
         return
+        
+        
+    assunto = t(
+        "emails_principal_assunto",
+        idioma_cliente
+    ).format(
+        nome_cliente=nome_cliente
+    )
 
-    html_body = f"""
-        <h2>Relatórios do módulo Previsão de Demanda, Análise de Estoques e MRP</h2>
-        <p>Olá, {nome_cliente}!</p>
+    html_body = t(
+        "emails_principal_corpo",
+        idioma_cliente
+    ).format(
+        nome_cliente=nome_cliente
+    )
+            
 
-        <p>Os arquivos anexos apresentam uma visão integrada da demanda,
-        dos estoques e das necessidades futuras de reposição da empresa.
-        </p>
-
-        <p>As planilhas de análise permitem identificar os itens mais importantes
-        para o negócio, os níveis recomendados de estoque de segurança,
-        possíveis excessos de estoque, itens de baixo giro e o valor financeiro
-        atualmente investido em estoques.
-        </p>
-
-        <p>
-        A planilha de Simulação de Ressuprimento (MRP) projeta a evolução
-        dos estoques para os próximos meses considerando a demanda prevista,
-        o estoque atual, os estoques de segurança e o lead time dos itens.
-        Com base nessas informações são calculadas as necessidades futuras
-        de reposição e as quantidades recomendadas para compra.
-        </p>
-
-        <h3>Por onde começar?</h3>
-
-        <ol>
-        <li>Identifique os itens classificados como AA e verifique se existe estoque suficiente para atender à demanda prevista.</li>
-        <li>Compare os estoques atuais com os estoques de segurança recomendados para identificar riscos de ruptura.</li>
-        <li>Analise os itens com baixo giro e alto valor em estoque para identificar possíveis excessos de investimento.</li>
-        <li>Avalie os itens que apresentam necessidade de reposição nos próximos meses segundo a simulação MRP.</li>
-        <li>Priorize o planejamento de compra dos itens com maior lead time.</li>
-        <li>Utilize as ordens planejadas como apoio ao planejamento de compras e de caixa.</li>
-        </ol>
-
-
-
-        <p>Atenciosamente,<br>MUPE Consultoria</p>
-        <p>Vladimir de Lima</p>
-        <p>WhatsApp 19 99783 5054</p><br>
-    """
 
     lista_anexos = []
     for arquivo in anexos:
@@ -219,7 +209,7 @@ def enviar_email_resend(nome_cliente, email_destino, anexos):
     payload = {
         "from": "MUPE Consultoria <vladimir.lima@mupeconsult.com>",
         "to": [email_destino],
-        "subject": f"Relatórios gerados para o cliente {nome_cliente}",
+        "subject": assunto,
         "html": html_body,
         "attachments": lista_anexos
     }
@@ -331,19 +321,28 @@ try:
     pasta_saida = f"/app/clientes/{cliente}/saida"
     anexos = glob.glob(f"{pasta_saida}/*")
 
+
+
     enviar_email_resend(
         nome_cliente,
         email_cliente,
-        anexos
+        anexos,
+        idioma_cliente
     )
 
+
+
+
 except Exception as e:
+
 
     enviar_email_erro(
         nome_cliente,
         email_cliente,
-        str(e)
+        str(e),
+        idioma_cliente
     )
+
 
 
 
