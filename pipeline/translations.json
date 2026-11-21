@@ -281,16 +281,44 @@
 	},
 
 	"valor_total_estoque": {
+	
 	  "pt": "Valor Total em Estoque",
 	  "en": "Total Inventory Value"
 	},
-
+	
+	
+	
 	"perc_valor_estoque": {
 	  "pt": "Porcentagem do Valor do Estoque",
 	  "en": "Percentage of Inventory Value"
 	}
-
+		},
 
 	
+	"emails": {
+		
+	  "erro_assunto": {
+		"pt": "Erro no processamento dos arquivos",
+		"en": "Error processing uploaded files"
+	   },
+		
+		"erro_corpo": {
+			"pt": "<h2>Processamento interrompido</h2><p>Olá, {nome_cliente}.</p><p>Foi encontrado um problema nos arquivos enviados.</p><pre>{mensagem_erro}</pre><p>Corrija os dados e realize um novo envio.</p><p>MUPE Consultoria</p>",
+		
+		
+			"en": "<h2>Processing interrupted</h2><p>Hello, {nome_cliente}.</p><p>A problem was found in the uploaded files.</p><pre>{mensagem_erro}</pre><p>Please correct the data and upload the files again.</p><p>MUPE Consultoria</p>"
+		},
+		
+		"principal_assunto": {
+		  "pt": "Relatórios gerados para o cliente {nome_cliente}",
+	      "en": "Reports generated for client {nome_cliente}"
+		},
+
+		"principal_corpo": {
+		  "pt": "<h2>Relatórios do módulo Previsão de Demanda, Análise de Estoques e MRP</h2><p>Olá, {nome_cliente}!</p><p>Os arquivos anexos apresentam uma visão integrada da demanda, dos estoques e das necessidades futuras de reposição da empresa.</p><p>As planilhas de análise permitem identificar os itens mais importantes para o negócio, os níveis recomendados de estoque de segurança, possíveis excessos de estoque, itens de baixo giro e o valor financeiro atualmente investido em estoques.</p><p>A planilha de Simulação de Ressuprimento (MRP) projeta a evolução dos estoques para os próximos meses considerando a demanda prevista, o estoque atual, os estoques de segurança e o lead time dos itens. Com base nessas informações são calculadas as necessidades futuras de reposição e as quantidades recomendadas para compra.</p><h3>Por onde começar?</h3><ol><li>Identifique os itens classificados como AA e verifique se existe estoque suficiente para atender à demanda prevista.</li><li>Compare os estoques atuais com os estoques de segurança recomendados para identificar riscos de ruptura.</li><li>Analise os itens com baixo giro e alto valor em estoque para identificar possíveis excessos de investimento.</li><li>Avalie os itens que apresentam necessidade de reposição nos próximos meses segundo a simulação MRP.</li><li>Priorize o planejamento de compra dos itens com maior lead time.</li><li>Utilize as ordens planejadas como apoio ao planejamento de compras e de caixa.</li></ol><p>Atenciosamente,<br>MUPE Consultoria</p><p>Vladimir de Lima</p><p>WhatsApp 19 99783 5054</p>",
+
+		  "en": "<h2>Demand Forecasting, Inventory Analysis and MRP Reports</h2><p>Hello, {nome_cliente}!</p><p>The attached reports provide a complete view of your company's demand, inventory levels, and future replenishment requirements.</p><p>The analysis spreadsheets help identify your most important products, recommended safety stock levels, potential excess inventory, slow-moving items, and the financial value currently tied up in inventory.</p><p>The Material Requirements Planning (MRP) report projects inventory levels over the coming months based on forecasted demand, current inventory, safety stock targets, and supplier lead times. Based on this information, future replenishment needs and recommended purchase quantities are calculated.</p><h3>Where should you start?</h3><ol><li>Review the products classified as AA and confirm there is sufficient inventory to support forecasted demand.</li><li>Compare current inventory levels with the recommended safety stock levels to identify potential stockout risks.</li><li>Analyze slow-moving products with high inventory value to identify possible overinvestment in stock.</li><li>Review items that require replenishment in the coming months according to the MRP projections.</li><li>Give priority to purchase planning for products with longer lead times.</li><li>Use the planned orders as a guide for purchasing and cash flow planning.</li></ol><p>Best regards,<br>MUPE Consultoria</p><p>Vladimir de Lima</p><p>WhatsApp +55 19 99783-5054</p>"
+		}		
+	}
+	
   }
-}

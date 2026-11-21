@@ -4,7 +4,7 @@ import ssl
 import subprocess
 import requests
 import base64
-from translation import t
+from pipeline.translation import t
 
 # Importa o pipeline mestre
 from pipeline.apato_000_master_pipeline import processar_cliente
@@ -117,7 +117,7 @@ def enviar_email_erro(
     )
 
     html_body = t(
-        "emails_erro_corpo",
+        "emails.erro_corpo",
         idioma_cliente
     ).format(
         nome_cliente=nome_cliente,
@@ -179,14 +179,14 @@ def enviar_email_resend(
         
         
     assunto = t(
-        "emails_principal_assunto",
+        "emails.principal_assunto",
         idioma_cliente
     ).format(
         nome_cliente=nome_cliente
     )
 
     html_body = t(
-        "emails_principal_corpo",
+        "emails.principal_corpo",
         idioma_cliente
     ).format(
         nome_cliente=nome_cliente
