@@ -10,6 +10,7 @@ with open(ARQUIVO_TRANSLATIONS, "r", encoding="utf-8") as f:
     translations = json.load(f)
 
 
+
 def t(chave, idioma):
 
     valor = translations
@@ -17,7 +18,9 @@ def t(chave, idioma):
     for parte in chave.split("."):
         valor = valor[parte]
 
-    return valor[idioma]
+    return valor[idioma.lower()]
+
+
 
 
 def ler_idioma(pasta_cliente):
